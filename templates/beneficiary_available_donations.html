@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Available Donations</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#f6f7ff;
+      --card: rgba(255,255,255,0.86);
+      --border: rgba(122,77,245,0.12);
+      --text:#1e1f2a;
+      --muted:#5c6072;
+
+      --purple:#7a4df5;
+      --purple2:#9c7bff;
+
+      --green:#2bb865;
+      --green2:#1b8f47;
+
+      --shadow: 0 18px 45px rgba(28,18,70,0.12);
+      --radius: 22px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Poppins, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(900px 520px at 12% 15%, rgba(122,77,245,0.14), transparent 60%),
+        radial-gradient(900px 520px at 88% 22%, rgba(43,184,101,0.10), transparent 60%),
+        var(--bg);
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+
+    .page{
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 22px;
+      opacity:0;
+      transform: translateY(10px);
+      animation: enter 600ms ease forwards;
+    }
+    @keyframes enter{to{opacity:1; transform: translateY(0);} }
+
+    /* Header */
+    .top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      margin-bottom:14px;
+    }
+    .title{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+    }
+    .gift{
+      width:46px;height:46px;border-radius:16px;
+      display:grid; place-items:center;
+      background: rgba(122,77,245,0.12);
+      border:1px solid rgba(122,77,245,0.16);
+      box-shadow: var(--shadow);
+      font-size:22px;
+    }
+    h1{
+      margin:0;
+      font-size:26px;
+      font-weight:900;
+      line-height:1.1;
+    }
+    .sub{
+      margin:6px 0 0;
+      color: var(--muted);
+      font-weight:600;
+      font-size:13px;
+    }
+
+    .actions{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .pill{
+      padding:10px 12px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.78);
+      border:1px solid rgba(122,77,245,0.10);
+      box-shadow: var(--shadow);
+      font-size:12px;
+      color: var(--muted);
+      white-space:nowrap;
+    }
+    .pill b{color:var(--text)}
+
+    /* Search + Filters */
+    .bar{
+      margin-top:10px;
+      border-radius: var(--radius);
+      background: rgba(255,255,255,0.78);
+      border:1px solid rgba(122,77,245,0.10);
+      box-shadow: var(--shadow);
+      padding: 14px;
+    }
+    .search{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      padding: 12px 12px;
+      border-radius: 18px;
+      background: rgba(122,77,245,0.06);
+      border:1px solid rgba(122,77,245,0.10);
+    }
+    .search input{
+      width:100%;
+      border:none;
+      outline:none;
+      background: transparent;
+      font-weight:700;
+      font-size:13px;
+      color: var(--text);
+    }
+    .search button{
+      width:44px;height:44px;
+      border-radius: 16px;
+      border:none;
+      cursor:pointer;
+      font-weight:900;
+      color:#fff;
+      background: linear-gradient(180deg, var(--purple2), var(--purple));
+      box-shadow: 0 18px 35px rgba(122,77,245,0.18);
+      transition: transform .18s ease, filter .18s ease;
+    }
+    .search button:hover{ transform: translateY(-2px); filter:brightness(1.05); }
+
+    .filters{
+      margin-top:12px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .chip-btn{
+      padding:10px 12px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.82);
+      border:1px solid rgba(122,77,245,0.12);
+      box-shadow: 0 10px 22px rgba(28,18,70,0.08);
+      font-size:12px;
+      font-weight:900;
+      color: var(--text);
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      text-decoration:none;
+      transition: transform .18s ease;
+      cursor:pointer;
+    }
+    .chip-btn:hover{ transform: translateY(-2px); }
+    .chip-btn.active{
+      border-color: rgba(122,77,245,0.28);
+      background: rgba(122,77,245,0.10);
+    }
+    .btn-filter{
+      margin-left:auto;
+      background: linear-gradient(180deg, rgba(43,184,101,0.95), rgba(27,143,71,0.95));
+      color:#fff;
+      border-color: rgba(43,184,101,0.22);
+    }
+
+    /* Cards */
+    .list{
+      margin-top:16px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:14px;
+    }
+
+    .don-card{
+      border-radius: var(--radius);
+      background: rgba(255,255,255,0.82);
+      border:1px solid rgba(122,77,245,0.10);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      display:grid;
+      grid-template-columns: 240px 1fr;
+      min-height: 168px;
+    }
+
+    .media{
+      position:relative;
+      overflow:hidden;
+      background:
+        radial-gradient(120px 80px at 20% 30%, rgba(122,77,245,0.22), transparent 60%),
+        radial-gradient(140px 90px at 80% 60%, rgba(43,184,101,0.18), transparent 60%),
+        rgba(122,77,245,0.08);
+      border-right: 1px solid rgba(122,77,245,0.10);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .media .img{
+      width: 92%;
+      height: 82%;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.85);
+      border:1px solid rgba(122,77,245,0.10);
+      box-shadow: 0 18px 45px rgba(28,18,70,0.10);
+      overflow:hidden;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+    }
+
+    .media .img img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    /* fallback icon when no image */
+    .fallback{
+      font-size:42px;
+      font-weight:900;
+      color:#3d2a98;
+      opacity:0.9;
+    }
+
+    .content{
+      padding: 16px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .row1{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:flex-start;
+    }
+
+    .don-title{
+      margin:0;
+      font-size:18px;
+      font-weight:900;
+      line-height:1.2;
+    }
+
+    .tag{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      padding:8px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:900;
+      color:#3d2a98;
+      background: rgba(122,77,245,0.10);
+      border:1px solid rgba(122,77,245,0.14);
+      white-space:nowrap;
+      height: fit-content;
+    }
+
+    .meta{
+      display:grid;
+      gap:8px;
+      margin-top:4px;
+    }
+    .meta-line{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      color: var(--muted);
+      font-weight:700;
+      font-size:12.5px;
+    }
+    .dot{
+      width:8px;height:8px;border-radius:99px;
+      background: rgba(122,77,245,0.55);
+      box-shadow: 0 0 0 6px rgba(122,77,245,0.10);
+    }
+
+    .expires{
+      margin-top:2px;
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      padding:8px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:900;
+      color:#b85b00;
+      background: rgba(255,180,90,0.16);
+      border:1px solid rgba(255,180,90,0.26);
+      width: fit-content;
+    }
+
+    .btns{
+      margin-top:auto;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      flex:1;
+      min-width: 170px;
+      border:none;
+      border-radius: 16px;
+      padding: 12px 14px;
+      cursor:pointer;
+      font-weight:900;
+      text-decoration:none;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      gap:10px;
+      transition: transform .18s ease, filter .18s ease;
+    }
+    .btn:hover{ transform: translateY(-2px); filter:brightness(1.05); }
+    .btn:active{ transform: scale(0.99); }
+
+    .btn-primary{
+      background: linear-gradient(180deg, rgba(43,184,101,0.95), rgba(27,143,71,0.95));
+      color:#fff;
+      box-shadow: 0 18px 35px rgba(43,184,101,0.16);
+    }
+    .btn-secondary{
+      background: rgba(255,255,255,0.90);
+      border:1px solid rgba(122,77,245,0.12);
+      color: var(--text);
+    }
+
+    .empty{
+      margin-top:16px;
+      border-radius: var(--radius);
+      background: rgba(255,255,255,0.82);
+      border:1px dashed rgba(122,77,245,0.22);
+      box-shadow: var(--shadow);
+      padding: 18px;
+      color: var(--muted);
+      font-weight:700;
+    }
+
+    /* Mobile */
+    @media (max-width: 860px){
+      .don-card{ grid-template-columns: 1fr; }
+      .media{ border-right:none; border-bottom:1px solid rgba(122,77,245,0.10); min-height: 190px; }
+      .btn{ min-width: 1px; }
+      .btn-filter{ margin-left:0; width:100%; justify-content:center; }
+      .actions{ justify-content:flex-start; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+
+    <!-- Header -->
+    <div class="top">
+      <div class="title">
+        <div class="gift">🎁</div>
+        <div>
+          <h1>Available Donations</h1>
+          <p class="sub">Browse approved food donations available for request</p>
+        </div>
+      </div>
+
+      <div class="actions">
+        <div class="pill">Signed in as <b>{{ user.full_name }}</b></div>
+        <a class="pill" style="text-decoration:none" href="{{ url_for('beneficiary_dashboard') }}">← Back to Dashboard</a>
+      </div>
+    </div>
+
+    <!-- Search + Filters -->
+    <div class="bar">
+      <form method="GET" action="{{ url_for('beneficiary_available_donations') }}">
+        <div class="search">
+          <input
+            type="text"
+            name="q"
+            value="{{ q }}"
+            placeholder="Search by food name or provider"
+            autocomplete="off"
+          />
+          {% if cat %}
+            <input type="hidden" name="cat" value="{{ cat }}">
+          {% endif %}
+          <button type="submit">⌕</button>
+        </div>
+      </form>
+
+      <div class="filters">
+        <!-- Category chips (real filters) -->
+        <a class="chip-btn {{ 'active' if not cat else '' }}"
+           href="{{ url_for('beneficiary_available_donations', q=q) }}">
+          🍽️ All
+        </a>
+
+        {% for c in categories %}
+          <a class="chip-btn {{ 'active' if cat==c else '' }}"
+             href="{{ url_for('beneficiary_available_donations', q=q, cat=c) }}">
+            🏷️ {{ c }}
+          </a>
+        {% endfor %}
+
+        <!-- UI-only buttons to match prototype -->
+        <button class="chip-btn" type="button" title="UI only">📍 Near me ▾</button>
+        <button class="chip-btn btn-filter" type="button" title="UI only">⚙ Filters</button>
+      </div>
+    </div>
+
+    <!-- Donation Cards -->
+    {% if donations and donations|length > 0 %}
+      <div class="list">
+
+        {% for d in donations %}
+          {% set provider = d.provider %}
+          <div class="don-card">
+
+            <div class="media">
+              <div class="img">
+                {# If provider has image, show it as cover - otherwise emoji fallback #}
+                {% if provider and provider.image %}
+                  <img src="{{ url_for('uploaded_file', filename=provider.image) }}" alt="Donation">
+                {% else %}
+                  <div class="fallback">🥗</div>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="content">
+              <div class="row1">
+                <div>
+                  <p class="don-title">{{ d.title }}</p>
+                  <div class="meta">
+                    <div class="meta-line"><span class="dot"></span> Provider: {{ provider.full_name if provider else "—" }}</div>
+                    <div class="meta-line"><span class="dot"></span> Category: {{ d.category or "—" }}</div>
+                    <div class="meta-line"><span class="dot"></span> Quantity: {{ d.quantity or "—" }}</div>
+                    <div class="meta-line"><span class="dot"></span> Posted: {{ d.created_at or "—" }}</div>
+                  </div>
+
+                  <div class="expires">⏰ Available now</div>
+                </div>
+
+                <div class="tag">Approved</div>
+              </div>
+
+              <div class="btns">
+                <form method="POST" action="{{ url_for('beneficiary_request_donation', donation_id=d.id) }}" style="flex:1;">
+                  <button class="btn btn-primary" type="submit">Request Donation</button>
+                </form>
+
+                <a class="btn btn-secondary" href="{{ url_for('beneficiary_donation_details', donation_id=d.id) }}">
+                  View Details
+                </a>
+              </div>
+
+            </div>
+          </div>
+        {% endfor %}
+
+      </div>
+    {% else %}
+      <div class="empty">
+        No approved donations found. Try changing filters or search keywords.
+      </div>
+    {% endif %}
+
+  </div>
+</body>
+</html>

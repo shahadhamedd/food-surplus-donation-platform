@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Provider Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg: #0b0f14;
+      --panel: rgba(255,255,255,0.06);
+      --panel2: rgba(255,255,255,0.08);
+      --border: rgba(255,255,255,0.10);
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.60);
+      --green: #2bb865;
+      --green2:#1b8f47;
+      --shadow: 0 22px 70px rgba(0,0,0,0.55);
+      --radius: 18px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Poppins, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(800px 500px at 20% 10%, rgba(43,184,101,0.18), transparent 60%),
+        radial-gradient(900px 550px at 90% 40%, rgba(90,140,255,0.16), transparent 60%),
+        var(--bg);
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+
+    /* Page enter animation */
+    .page{
+      display:grid;
+      grid-template-columns: 290px 1fr;
+      min-height:100vh;
+      opacity:0;
+      transform: translateY(10px);
+      animation: enter 600ms ease forwards;
+    }
+    @keyframes enter{
+      to{opacity:1; transform: translateY(0);}
+    }
+
+    /* Sidebar */
+    .sidebar{
+      padding:22px;
+      border-right: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+      position: sticky;
+      top:0;
+      height:100vh;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .brand{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      padding:16px;
+      border-radius: var(--radius);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+    .logo{
+      width:44px;height:44px;border-radius:14px;
+      background: linear-gradient(180deg, rgba(43,184,101,0.30), rgba(27,143,71,0.10));
+      border: 1px solid rgba(43,184,101,0.30);
+      display:grid; place-items:center;
+      font-weight:900;
+      color:#dfffe9;
+    }
+    .brand h3{margin:0; font-size:14px; font-weight:800;}
+    .brand p{margin:2px 0 0; font-size:12px; color:var(--muted);}
+
+    .profile-mini{
+      margin-top:14px;
+      padding:14px;
+      border-radius: var(--radius);
+      background: var(--panel);
+      border:1px solid var(--border);
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .avatar{
+      width:44px;height:44px;border-radius:16px;
+      background: rgba(255,255,255,0.08);
+      border:1px solid rgba(255,255,255,0.12);
+      display:grid; place-items:center;
+      font-weight:900;
+      color: rgba(255,255,255,0.9);
+      overflow:hidden;
+      flex:0 0 auto;
+    }
+    .avatar img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+    .profile-mini .name{font-weight:800; font-size:13px; margin:0}
+    .profile-mini .cat{font-size:12px; color:var(--muted); margin:2px 0 0}
+
+    .nav{
+      margin-top:16px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .nav a{
+      text-decoration:none;
+      color: var(--text);
+      padding:12px 14px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.08);
+      display:flex;
+      align-items:center;
+      gap:10px;
+      transition: transform .18s ease, background .18s ease, border-color .18s ease;
+    }
+    .nav a:hover{
+      transform: translateY(-2px);
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(43,184,101,0.25);
+    }
+    .nav a.active{
+      border-color: rgba(43,184,101,0.30);
+      background: rgba(43,184,101,0.10);
+    }
+
+    .dot{
+      width:10px;height:10px;border-radius:99px;
+      background: rgba(43,184,101,0.55);
+      box-shadow: 0 0 0 6px rgba(43,184,101,0.08);
+    }
+
+    .logout{
+      margin-top:auto;
+      padding-top:16px;
+    }
+    .logout a{
+      display:flex; align-items:center; justify-content:center;
+      padding:12px;
+      border-radius: 14px;
+      text-decoration:none;
+      font-weight:900;
+      color: #ffd7d7;
+      background: rgba(255,80,80,0.12);
+      border:1px solid rgba(255,80,80,0.25);
+      transition: transform .18s ease;
+    }
+    .logout a:hover{ transform: translateY(-2px); }
+
+    /* Main */
+    .main{
+      padding:26px 26px 30px;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:18px;
+    }
+    .title h1{margin:0; font-size:24px; font-weight:900;}
+    .title p{margin:6px 0 0; color:var(--muted); font-size:13px;}
+
+    .top-actions{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .pill{
+      padding:10px 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.10);
+      color: var(--muted);
+      font-size:12px;
+      display:flex;
+      gap:8px;
+      align-items:center;
+      transition: transform .18s ease;
+      max-width: 360px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+    .pill:hover{ transform: translateY(-2px); }
+    .pill b{color: var(--text);}
+
+    /* Layout sections */
+    .grid{
+      display:grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap:18px;
+      align-items:start;
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap:12px;
+      margin-bottom:18px;
+    }
+
+    .card{
+      border-radius: var(--radius);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+
+    .stat-card{
+      padding:14px;
+      position:relative;
+      cursor:default;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+    .stat-card:hover{
+      transform: translateY(-3px);
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(43,184,101,0.25);
+    }
+    .stat-label{color:var(--muted); font-size:12px; font-weight:700;}
+    .stat-value{font-size:26px; font-weight:900; margin-top:4px;}
+    .stat-badge{
+      position:absolute; right:14px; top:14px;
+      width:44px;height:44px;border-radius:16px;
+      background: rgba(43,184,101,0.14);
+      border:1px solid rgba(43,184,101,0.22);
+      display:grid; place-items:center;
+      color:#dfffe9;
+    }
+
+    .panel{
+      padding:16px;
+    }
+    .panel h2{
+      margin:0;
+      font-size:16px;
+      font-weight:900;
+    }
+    .panel .sub{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    .cta-row{
+      display:flex;
+      gap:12px;
+      margin-top:14px;
+    }
+    .btn{
+      flex:1;
+      border:none;
+      border-radius: 14px;
+      padding:12px 14px;
+      cursor:pointer;
+      font-weight:900;
+      font-size:13px;
+      transition: transform .18s ease, filter .18s ease;
+      display:flex; align-items:center; justify-content:center; gap:10px;
+      text-decoration:none;
+    }
+    .btn:hover{ transform: translateY(-2px); filter: brightness(1.05); }
+    .btn:active{ transform: scale(0.99); }
+
+    .btn-green{
+      color:#06120b;
+      background: linear-gradient(180deg, #2bb865, #1b8f47);
+      box-shadow: 0 16px 30px rgba(43,184,101,0.18);
+    }
+    .btn-ghost{
+      color: var(--text);
+      background: rgba(255,255,255,0.06);
+      border:1px solid rgba(255,255,255,0.12);
+    }
+
+    .list{
+      margin-top:12px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .row{
+      padding:12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.09);
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+      transition: transform .18s ease, border-color .18s ease;
+    }
+    .row:hover{ transform: translateY(-2px); border-color: rgba(43,184,101,0.22); }
+    .row b{font-size:13px;}
+    .row small{display:block; color:var(--muted); margin-top:2px; font-size:12px;}
+
+    .chip{
+      padding:7px 10px;
+      border-radius: 999px;
+      font-size:12px;
+      font-weight:900;
+      border:1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      white-space:nowrap;
+    }
+    .chip.pending{border-color: rgba(255,200,90,0.25); background: rgba(255,200,90,0.10); color:#ffe5b8;}
+    .chip.approved{border-color: rgba(43,184,101,0.25); background: rgba(43,184,101,0.12); color:#dfffe9;}
+    .chip.completed{border-color: rgba(130,180,255,0.25); background: rgba(130,180,255,0.12); color:#e3eeff;}
+    .chip.unknown{border-color: rgba(255,255,255,0.16); background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.85);}
+
+    /* Profile card */
+    .profile-card .panel{ padding:18px; }
+    .kvs{ margin-top:12px; display:grid; gap:10px; }
+    .kv{
+      display:flex; justify-content:space-between; gap:10px;
+      padding:10px 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.09);
+    }
+    .kv span{color:var(--muted); font-size:12px; font-weight:700;}
+    .kv b{font-size:12.5px;}
+    .edit{ margin-top:12px; width:100%; }
+
+    /* Responsive */
+    @media (max-width: 1100px){
+      .stats{grid-template-columns: repeat(2, 1fr);}
+      .grid{grid-template-columns: 1fr;}
+      .sidebar{position:relative; height:auto;}
+      .page{grid-template-columns: 1fr;}
+      body{overflow:auto;}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">F</div>
+        <div>
+          <h3>FSDP Provider</h3>
+          <p>Modern dark workspace</p>
+        </div>
+      </div>
+
+      <div class="profile-mini">
+        <div class="avatar">
+          {% if user.image %}
+            <img src="{{ url_for('uploaded_file', filename=user.image) }}" alt="Profile">
+          {% else %}
+            {{ (user.full_name[:1] if user and user.full_name else "P") }}
+          {% endif %}
+        </div>
+        <div>
+          <p class="name">{{ user.full_name }}</p>
+          <p class="cat">{{ user.category }}</p>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a class="active" href="{{ url_for('provider_dashboard') }}"><span class="dot"></span> Dashboard</a>
+        <a href="{{ url_for('provider_add_donation') }}"><span class="dot"></span> Add Donation</a>
+
+        <!-- صفحات موجودة عندك -->
+        <a href="{{ url_for('provider_my_donations') }}"><span class="dot"></span> My Donations</a>
+        <a href="{{ url_for('provider_requests_received') }}"><span class="dot"></span> Requests Received</a>
+        <a href="{{ url_for('provider_reports') }}"><span class="dot"></span> Reports / Stats</a>
+
+        <a href="{{ url_for('provider_profile_edit') }}"><span class="dot"></span> Profile / Settings</a>
+      </nav>
+
+      <div class="logout">
+        <a href="{{ url_for('logout') }}">Logout</a>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+
+      <div class="topbar">
+        <div class="title">
+          <h1>Dashboard</h1>
+          <p>Welcome back, <b>{{ user.full_name }}</b></p>
+        </div>
+
+        <div class="top-actions">
+          <div class="pill"><b>{{ user.email }}</b></div>
+          <div class="pill">Verification: <b>{{ user.verification_status }}</b></div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <section class="stats">
+        <div class="card stat-card">
+          <div class="stat-label">Total Donations</div>
+          <div class="stat-value" data-count="{{ stats.total_donations }}">0</div>
+          <div class="stat-badge">📦</div>
+        </div>
+
+        <div class="card stat-card">
+          <div class="stat-label">Pending</div>
+          <div class="stat-value" data-count="{{ stats.pending_donations }}">0</div>
+          <div class="stat-badge">⏳</div>
+        </div>
+
+        <div class="card stat-card">
+          <div class="stat-label">Approved</div>
+          <div class="stat-value" data-count="{{ stats.approved_donations }}">0</div>
+          <div class="stat-badge">✅</div>
+        </div>
+
+        <div class="card stat-card">
+          <div class="stat-label">Requests Received</div>
+          <div class="stat-value" data-count="{{ stats.total_requests }}">0</div>
+          <div class="stat-badge">📨</div>
+        </div>
+      </section>
+
+      <section class="grid">
+
+        <!-- Left -->
+        <div class="card">
+          <div class="panel">
+            <h2>Activity Center</h2>
+            <p class="sub">Quick overview of your latest donations and requests</p>
+
+            <div class="cta-row">
+              <a class="btn btn-green" href="{{ url_for('provider_add_donation') }}">➕ Add Donation</a>
+              <a class="btn btn-ghost" href="{{ url_for('provider_dashboard') }}">🔄 Refresh</a>
+            </div>
+
+            <div style="height:14px"></div>
+
+            <h2 style="font-size:14px">Latest Donations</h2>
+            <div class="list">
+              {% if latest_donations and latest_donations|length > 0 %}
+                {% for d in latest_donations %}
+                  {% set s = (d.status or "Pending")|lower %}
+                  {% set cls = "unknown" %}
+                  {% if s == "pending" %}{% set cls = "pending" %}{% endif %}
+                  {% if s == "approved" %}{% set cls = "approved" %}{% endif %}
+                  {% if s == "completed" %}{% set cls = "completed" %}{% endif %}
+
+                  <div class="row">
+                    <div>
+                      <b>{{ d.title }}</b>
+                      <small>{{ d.quantity or "-" }} • {{ d.category or "-" }}</small>
+                    </div>
+                    <div class="chip {{ cls }}">{{ d.status }}</div>
+                  </div>
+                {% endfor %}
+              {% else %}
+                <div class="row">
+                  <div>
+                    <b>No donations yet</b>
+                    <small>Click “Add Donation” to create your first donation</small>
+                  </div>
+                  <div class="chip unknown">Info</div>
+                </div>
+              {% endif %}
+            </div>
+
+            <div style="height:14px"></div>
+
+            <h2 style="font-size:14px">Latest Requests</h2>
+            <div class="list">
+              {% if latest_requests and latest_requests|length > 0 %}
+                {% for r in latest_requests %}
+                  {% set s = (r.status or "Pending")|lower %}
+                  {% set cls = "unknown" %}
+                  {% if s == "pending" %}{% set cls = "pending" %}{% endif %}
+                  {% if s == "approved" %}{% set cls = "approved" %}{% endif %}
+                  {% if s == "completed" %}{% set cls = "completed" %}{% endif %}
+
+                  <div class="row">
+                    <div>
+                      <b>{{ r.beneficiary_name }}</b>
+                      <small>{{ r.donation_title }} • {{ r.created_at }}</small>
+                    </div>
+                    <div class="chip {{ cls }}">{{ r.status }}</div>
+                  </div>
+                {% endfor %}
+              {% else %}
+                <div class="row">
+                  <div>
+                    <b>No requests yet</b>
+                    <small>Requests will appear when beneficiaries request your donations</small>
+                  </div>
+                  <div class="chip unknown">Info</div>
+                </div>
+              {% endif %}
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Right -->
+        <aside class="card profile-card">
+          <div class="panel">
+            <h2>My Profile</h2>
+            <p class="sub">Quick profile details</p>
+
+            <div class="kvs">
+              <div class="kv"><span>Full Name</span><b>{{ user.full_name }}</b></div>
+              <div class="kv"><span>Phone</span><b>{{ user.phone }}</b></div>
+              <div class="kv"><span>Email</span><b>{{ user.email }}</b></div>
+              <div class="kv"><span>Category</span><b>{{ user.category }}</b></div>
+              <div class="kv"><span>Verification</span><b>{{ user.verification_status }}</b></div>
+            </div>
+
+            <a class="btn btn-green edit" href="{{ url_for('provider_profile_edit') }}">✏️ Edit Profile</a>
+          </div>
+        </aside>
+
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    // Count-up animation
+    function animateCount(el, end){
+      const duration = 900;
+      const startTime = performance.now();
+
+      function step(now){
+        const p = Math.min((now - startTime) / duration, 1);
+        const value = Math.floor(end * (p * (2 - p)));
+        el.textContent = value;
+        if(p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    const counters = document.querySelectorAll("[data-count]");
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){
+          const el = e.target;
+          const end = parseInt(el.getAttribute("data-count") || "0", 10);
+          animateCount(el, isNaN(end) ? 0 : end);
+          io.unobserve(el);
+        }
+      });
+    }, {threshold: 0.35});
+
+    counters.forEach(c=> io.observe(c));
+  </script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Edit Provider Profile</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family:'Poppins', sans-serif;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      background:#eaf7ef;
+    }
+
+    /* Background image */
+    .bg{
+      position:fixed;
+      inset:0;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.20) 0%, rgba(255,255,255,0.45) 35%, rgba(255,255,255,0.70) 100%),
+        url("{{ url_for('static', filename='img/login_donation_bg.png') }}");
+      background-size:cover;
+      background-position:center;
+      z-index:-3;
+      transform:scale(1.02);
+    }
+    .bg::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(3px);
+      background: rgba(255,255,255,0.10);
+      z-index:-2;
+    }
+
+    .card{
+      width:min(600px, 92vw);
+      background: rgba(255,255,255,0.93);
+      border-radius: 26px;
+      padding: 30px 26px 22px;
+      box-shadow: 0 24px 70px rgba(0,0,0,0.18);
+      position:relative;
+    }
+
+    h1{
+      margin:0 0 6px;
+      font-size: 28px;
+      font-weight: 800;
+      color:#2e7d32;
+      text-align:center;
+    }
+    .sub{
+      margin:0 0 18px;
+      text-align:center;
+      color:#6b7280;
+      font-weight:600;
+      font-size:14px;
+    }
+
+    label{
+      display:block;
+      font-weight:700;
+      color:#1f2937;
+      margin: 12px 0 6px;
+      font-size:14px;
+    }
+
+    input{
+      width:100%;
+      padding: 14px 14px;
+      border-radius: 14px;
+      border: 1.5px solid rgba(0,0,0,0.10);
+      outline:none;
+      background: rgba(255,255,255,0.90);
+      font-size: 15px;
+      transition: .2s ease;
+    }
+    input:focus{
+      border-color: rgba(46,125,50,0.55);
+      box-shadow: 0 0 0 4px rgba(46,125,50,0.14);
+    }
+
+    .row{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .actions{
+      display:flex;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .btn{
+      flex:1;
+      padding: 14px 16px;
+      border:0;
+      border-radius: 16px;
+      cursor:pointer;
+      font-weight:800;
+      font-size:16px;
+      transition:.2s ease;
+    }
+
+    .btn-save{
+      background: linear-gradient(180deg, #2f8a3a, #2e7d32);
+      color:#fff;
+      box-shadow: 0 12px 26px rgba(46,125,50,0.28);
+    }
+    .btn-save:hover{ transform: translateY(-1px); }
+
+    .btn-cancel{
+      background:#ffffff;
+      color:#2e7d32;
+      border:2px solid #2e7d32;
+      text-decoration:none;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .btn-cancel:hover{ opacity:0.9; transform: translateY(-1px); }
+
+    @media (max-width:520px){
+      .row{ grid-template-columns: 1fr; }
+      h1{ font-size:24px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="bg"></div>
+
+  <div class="card">
+    <h1>Edit Profile</h1>
+    <p class="sub">Update your provider information</p>
+
+    <form method="POST">
+      <label>Full Name</label>
+      <input type="text" name="full_name" value="{{ user.full_name or '' }}" required>
+
+      <div class="row">
+        <div>
+          <label>Phone</label>
+          <input type="text" name="phone" value="{{ user.phone or '' }}" required>
+        </div>
+        <div>
+          <label>Category</label>
+          <!-- غالباً ما نخليها تتعدل -->
+          <input type="text" value="{{ user.category or '' }}" readonly>
+        </div>
+      </div>
+
+      <label>Email</label>
+      <input type="email" value="{{ user.email or '' }}" readonly>
+
+      <label>Address</label>
+      <input type="text" name="address" value="{{ user.address or '' }}" required>
+
+      <div class="actions">
+        <button class="btn btn-save" type="submit">Save Changes</button>
+        <a class="btn btn-cancel" href="{{ url_for('provider_dashboard') }}">Cancel</a>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

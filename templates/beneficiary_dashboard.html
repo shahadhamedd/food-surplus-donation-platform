@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Beneficiary Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#f7f7ff;
+      --text:#171826;
+      --muted:#6a6f86;
+
+      --violet:#6d5efc;
+      --violet2:#9b7bff;
+      --mint:#26c281;
+      --mint2:#18a86f;
+      --peach:#ffb347;
+
+      --card:rgba(255,255,255,0.86);
+      --stroke:rgba(109,94,252,0.14);
+      --shadow:0 18px 45px rgba(31, 25, 80, 0.12);
+      --shadow2:0 10px 28px rgba(31, 25, 80, 0.08);
+      --r:22px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Poppins, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(900px 520px at 10% 10%, rgba(109,94,252,0.16), transparent 60%),
+        radial-gradient(900px 520px at 85% 20%, rgba(38,194,129,0.12), transparent 60%),
+        radial-gradient(900px 520px at 55% 90%, rgba(255,179,71,0.12), transparent 60%),
+        var(--bg);
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+
+    .page{
+      display:grid;
+      grid-template-columns: 300px 1fr;
+      min-height:100vh;
+      opacity:0;
+      transform: translateY(10px);
+      animation: enter 650ms ease forwards;
+    }
+    @keyframes enter{to{opacity:1; transform: translateY(0);} }
+
+    /* Sidebar */
+    .sidebar{
+      padding:22px;
+      position:sticky;
+      top:0;
+      height:100vh;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.62), rgba(255,255,255,0.42));
+      backdrop-filter: blur(12px);
+      border-right: 1px solid rgba(109,94,252,0.10);
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    .brand{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      padding:16px;
+      border-radius: var(--r);
+      background:
+        linear-gradient(135deg, rgba(109,94,252,0.18), rgba(255,255,255,0.75));
+      border:1px solid rgba(109,94,252,0.14);
+      box-shadow: var(--shadow2);
+    }
+    .logo{
+      width:48px;height:48px;border-radius:18px;
+      display:grid;place-items:center;
+      font-weight:900;
+      color:#2b236a;
+      background:
+        radial-gradient(22px 22px at 30% 30%, rgba(255,255,255,0.85), rgba(255,255,255,0.45)),
+        linear-gradient(180deg, rgba(109,94,252,0.28), rgba(109,94,252,0.10));
+      border:1px solid rgba(109,94,252,0.18);
+    }
+    .brand h3{margin:0;font-size:14px;font-weight:900}
+    .brand p{margin:2px 0 0;font-size:12px;color:var(--muted);font-weight:700}
+
+    .profile-mini{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:14px;
+      border-radius: var(--r);
+      background: rgba(255,255,255,0.78);
+      border:1px solid rgba(109,94,252,0.12);
+      box-shadow: var(--shadow2);
+    }
+    .avatar{
+      width:46px;height:46px;border-radius:18px;
+      display:grid;place-items:center;
+      font-weight:900;
+      color:#2b236a;
+      background: rgba(109,94,252,0.12);
+      border:1px solid rgba(109,94,252,0.18);
+      overflow:hidden;
+      flex:0 0 auto;
+    }
+    .avatar img{width:100%;height:100%;object-fit:cover;display:block;}
+    .meta{min-width:0;}
+    .name{margin:0;font-weight:900;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .cat{margin:2px 0 0;color:var(--muted);font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+    .search{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:12px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.78);
+      border:1px solid rgba(109,94,252,0.12);
+      box-shadow: var(--shadow2);
+    }
+    .search input{
+      width:100%;
+      border:none;
+      outline:none;
+      background: transparent;
+      font-weight:700;
+      color:var(--text);
+    }
+    .search button{
+      width:42px;height:42px;border-radius:16px;
+      border:none;cursor:pointer;
+      background: linear-gradient(180deg, var(--violet2), var(--violet));
+      color:#fff;
+      font-weight:900;
+      transition: transform .18s ease, filter .18s ease;
+    }
+    .search button:hover{transform: translateY(-2px); filter:brightness(1.05);}
+
+    .nav{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin-top:2px;
+    }
+    .nav a{
+      text-decoration:none;
+      color:var(--text);
+      padding:12px 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.76);
+      border:1px solid rgba(109,94,252,0.12);
+      box-shadow: var(--shadow2);
+      display:flex;
+      align-items:center;
+      gap:12px;
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .nav a:hover{transform: translateY(-2px); box-shadow: var(--shadow);}
+    .nav a.active{
+      border-color: rgba(109,94,252,0.22);
+      background:
+        linear-gradient(135deg, rgba(109,94,252,0.14), rgba(255,255,255,0.80));
+    }
+    .ic{
+      width:36px;height:36px;border-radius:16px;
+      display:grid;place-items:center;
+      background: rgba(109,94,252,0.10);
+      border:1px solid rgba(109,94,252,0.14);
+      color:#2b236a;
+      font-weight:900;
+      flex:0 0 auto;
+    }
+
+    .logout{
+      margin-top:auto;
+      padding-top:10px;
+    }
+    .logout a{
+      display:flex;align-items:center;justify-content:center;
+      padding:12px;
+      border-radius: 18px;
+      text-decoration:none;
+      font-weight:900;
+      color:#ff3b3b;
+      background: rgba(255,59,59,0.10);
+      border:1px solid rgba(255,59,59,0.18);
+      transition: transform .18s ease;
+      box-shadow: var(--shadow2);
+    }
+    .logout a:hover{transform: translateY(-2px);}
+
+    /* Main */
+    .main{
+      padding:26px 26px 30px;
+    }
+
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin-bottom:16px;
+    }
+    .title h1{margin:0;font-size:24px;font-weight:900}
+    .title p{margin:6px 0 0;color:var(--muted);font-size:13px;font-weight:700}
+
+    .right{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .pill{
+      padding:10px 12px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.82);
+      border:1px solid rgba(109,94,252,0.12);
+      box-shadow: var(--shadow2);
+      font-size:12px;
+      color:var(--muted);
+      max-width: 360px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      font-weight:700;
+    }
+    .pill b{color:var(--text);}
+
+    /* Hero */
+    .hero{
+      position:relative;
+      border-radius: var(--r);
+      background:
+        radial-gradient(420px 220px at 15% 20%, rgba(109,94,252,0.22), transparent 60%),
+        radial-gradient(420px 220px at 80% 30%, rgba(38,194,129,0.18), transparent 60%),
+        rgba(255,255,255,0.78);
+      border:1px solid rgba(109,94,252,0.12);
+      box-shadow: var(--shadow);
+      padding:18px;
+      display:grid;
+      grid-template-columns: 1.3fr 0.7fr;
+      gap:14px;
+      overflow:hidden;
+      margin-bottom:14px;
+    }
+    .hero:after{
+      content:"";
+      position:absolute;
+      left:-60px; bottom:-70px;
+      width:240px;height:240px;border-radius:999px;
+      background: rgba(109,94,252,0.12);
+      filter: blur(0.2px);
+    }
+    .hero h2{margin:0;font-weight:900}
+    .hero p{margin:6px 0 0;color:var(--muted);font-weight:700;font-size:13px}
+    .tag{
+      margin-top:10px;
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      background: rgba(255,255,255,0.85);
+      border:1px solid rgba(109,94,252,0.14);
+      padding:10px 12px;
+      border-radius: 999px;
+      font-size:12px;
+      font-weight:900;
+      color:#2b236a;
+      box-shadow: var(--shadow2);
+    }
+
+    .hero-right{
+      display:grid;
+      gap:10px;
+      align-content:start;
+      position:relative;
+      z-index:1;
+    }
+    .mini-card{
+      border-radius: 18px;
+      background: rgba(255,255,255,0.82);
+      border:1px solid rgba(109,94,252,0.12);
+      box-shadow: var(--shadow2);
+      padding:12px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      transition: transform .18s ease;
+    }
+    .mini-card:hover{transform: translateY(-2px);}
+    .mini-card b{font-size:12px;}
+    .mini-ic{
+      width:44px;height:44px;border-radius:18px;
+      display:grid;place-items:center;
+      font-weight:900;
+      color:#2b236a;
+      background: rgba(109,94,252,0.10);
+      border:1px solid rgba(109,94,252,0.14);
+      flex:0 0 auto;
+    }
+
+    /* Stats */
+    .stats{
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap:12px;
+      margin-bottom:14px;
+    }
+    .stat{
+      border-radius: var(--r);
+      background: rgba(255,255,255,0.82);
+      border:1px solid rgba(109,94,252,0.12);
+      box-shadow: var(--shadow2);
+      padding:14px;
+      transition: transform .18s ease;
+      position:relative;
+      overflow:hidden;
+    }
+    .stat:hover{transform: translateY(-2px);}
+    .lbl{color:var(--muted); font-size:12px; font-weight:800}
+    .val{font-size:24px; font-weight:900; margin-top:6px}
+    .stat .icon{
+      position:absolute;
+      right:12px; top:12px;
+      width:44px;height:44px;border-radius:18px;
+      display:grid;place-items:center;
+      background: rgba(109,94,252,0.10);
+      border:1px solid rgba(109,94,252,0.14);
+      color:#2b236a;
+      font-weight:900;
+    }
+    .stat.mint .icon{background: rgba(38,194,129,0.10); border-color: rgba(38,194,129,0.16);}
+    .stat.peach .icon{background: rgba(255,179,71,0.12); border-color: rgba(255,179,71,0.18);}
+
+    /* Grid */
+    .grid{
+      display:grid;
+      grid-template-columns: 1.25fr 0.75fr;
+      gap:16px;
+      align-items:start;
+    }
+
+    .card{
+      border-radius: var(--r);
+      background: rgba(255,255,255,0.82);
+      border:1px solid rgba(109,94,252,0.12);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .panel{padding:16px}
+    .panel h3{margin:0;font-size:15px;font-weight:900}
+    .sub{margin:6px 0 0;color:var(--muted);font-size:12px;font-weight:700}
+
+    .rows{margin-top:12px; display:flex; flex-direction:column; gap:10px;}
+    .row{
+      padding:12px;
+      border-radius: 18px;
+      background: rgba(109,94,252,0.06);
+      border:1px solid rgba(109,94,252,0.10);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      transition: transform .18s ease;
+    }
+    .row:hover{transform: translateY(-2px);}
+    .row b{font-size:13px}
+    .row small{display:block;margin-top:2px;color:var(--muted);font-size:12px;font-weight:700}
+
+    .chip{
+      padding:7px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:900;
+      background: rgba(255,255,255,0.90);
+      border:1px solid rgba(109,94,252,0.14);
+      color:#2b236a;
+      white-space:nowrap;
+    }
+    .chip.pending{border-color: rgba(255,179,71,0.25); background: rgba(255,179,71,0.14); color:#7a4a00;}
+    .chip.approved{border-color: rgba(38,194,129,0.25); background: rgba(38,194,129,0.14); color:#0f5e3d;}
+    .chip.completed{border-color: rgba(109,94,252,0.22); background: rgba(109,94,252,0.12); color:#2b236a;}
+    .chip.info{border-color: rgba(109,94,252,0.14); background: rgba(255,255,255,0.92); color:#2b236a;}
+
+    .actions{
+      display:flex;
+      gap:10px;
+      margin-top:12px;
+      flex-wrap:wrap;
+    }
+    .btn{
+      flex:1;
+      min-width: 160px;
+      padding:12px 14px;
+      border-radius: 18px;
+      border:none;
+      cursor:pointer;
+      font-weight:900;
+      text-decoration:none;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      gap:10px;
+      transition: transform .18s ease, filter .18s ease;
+    }
+    .btn:hover{transform: translateY(-2px); filter:brightness(1.05);}
+    .btn-primary{
+      background: linear-gradient(180deg, var(--violet2), var(--violet));
+      color:#fff;
+      box-shadow: 0 18px 35px rgba(109,94,252,0.18);
+    }
+    .btn-mint{
+      background: linear-gradient(180deg, rgba(38,194,129,0.95), rgba(24,168,111,0.95));
+      color:#fff;
+      box-shadow: 0 18px 35px rgba(38,194,129,0.16);
+    }
+    .btn-ghost{
+      background: rgba(255,255,255,0.90);
+      border:1px solid rgba(109,94,252,0.14);
+      color: var(--text);
+    }
+
+    .kvs{margin-top:12px; display:grid; gap:10px;}
+    .kv{
+      padding:10px 12px;
+      border-radius: 18px;
+      background: rgba(109,94,252,0.06);
+      border:1px solid rgba(109,94,252,0.10);
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .kv span{font-size:12px;color:var(--muted);font-weight:800}
+    .kv b{font-size:12.5px}
+
+    @media (max-width: 1100px){
+      .stats{grid-template-columns: repeat(2, 1fr);}
+      .grid{grid-template-columns: 1fr;}
+      .sidebar{position:relative;height:auto;}
+      .page{grid-template-columns: 1fr;}
+      .hero{grid-template-columns: 1fr;}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">F</div>
+        <div>
+          <h3>FSDP Beneficiary</h3>
+          <p>Soft friendly dashboard</p>
+        </div>
+      </div>
+
+      <div class="profile-mini">
+        <div class="avatar">
+          <!-- Beneficiary has document, not image. So we show letter only (or you can add your own image field later). -->
+          {{ (user.full_name[:1] if user and user.full_name else "B") }}
+        </div>
+        <div class="meta">
+          <p class="name">{{ user.full_name }}</p>
+          <p class="cat">{{ user.category }}</p>
+        </div>
+      </div>
+
+      <div class="search">
+        <input type="text" placeholder="Search donations... (UI only)">
+        <button type="button">⌕</button>
+      </div>
+
+      <nav class="nav">
+        <a class="active" href="{{ url_for('beneficiary_dashboard') }}"><div class="ic">🏠</div> Dashboard</a>
+        <a href="{{ url_for('beneficiary_available_donations') }}"><div class="ic">🎁</div> Available Donations</a>
+        <a href="{{ url_for('beneficiary_requests') }}"><div class="ic">📌</div> My Requests</a>
+        <a href="{{ url_for('edit_beneficiary_profile') }}"><div class="ic">⚙️</div> Profile / Settings</a>
+      </nav>
+
+      <div class="logout">
+        <a href="{{ url_for('logout') }}">Logout</a>
+      </div>
+    </aside>
+
+    <main class="main">
+
+      <div class="topbar">
+        <div class="title">
+          <h1>Dashboard</h1>
+          <p>Browse available donations and track your requests</p>
+        </div>
+        <div class="right">
+          <div class="pill"><b>{{ user.email }}</b></div>
+        </div>
+      </div>
+
+      <section class="hero">
+        <div style="position:relative; z-index:1;">
+          <h2>Hi, {{ user.full_name }}</h2>
+          <p>Ready to request food surplus items and support your community?</p>
+          <div class="tag">Category: <span style="color:var(--text); font-weight:900;">{{ user.category }}</span></div>
+        </div>
+
+        <div class="hero-right">
+          <div class="mini-card">
+            <div>
+              <b>Available now</b>
+              <div style="font-size:12px; color:var(--muted); font-weight:700; margin-top:2px;">Approved donations</div>
+            </div>
+            <div class="mini-ic">🎁</div>
+          </div>
+          <div class="mini-card">
+            <div>
+              <b>Track requests</b>
+              <div style="font-size:12px; color:var(--muted); font-weight:700; margin-top:2px;">Pending / Approved</div>
+            </div>
+            <div class="mini-ic" style="background: rgba(38,194,129,0.10); border-color: rgba(38,194,129,0.16);">📌</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Stats -->
+      <section class="stats">
+        <div class="stat mint">
+          <div class="lbl">Available Donations</div>
+          <div class="val" data-count="{{ stats.available_count }}">0</div>
+          <div class="icon">🎁</div>
+        </div>
+        <div class="stat">
+          <div class="lbl">My Requests</div>
+          <div class="val" data-count="{{ stats.my_requests_total }}">0</div>
+          <div class="icon">📌</div>
+        </div>
+        <div class="stat peach">
+          <div class="lbl">Pending</div>
+          <div class="val" data-count="{{ stats.my_requests_pending }}">0</div>
+          <div class="icon">⏳</div>
+        </div>
+        <div class="stat">
+          <div class="lbl">Approved</div>
+          <div class="val" data-count="{{ stats.my_requests_approved }}">0</div>
+          <div class="icon">✅</div>
+        </div>
+      </section>
+
+      <section class="grid">
+
+        <!-- Left -->
+        <div class="card">
+          <div class="panel">
+            <h3>Latest Available Donations</h3>
+            <p class="sub">A quick look at the newest approved donations</p>
+
+            <div class="rows">
+              {% if latest_available and latest_available|length > 0 %}
+                {% for d in latest_available %}
+                  <div class="row">
+                    <div>
+                      <b>{{ d.title }}</b>
+                      <small>{{ d.quantity or "-" }} • {{ d.category or "-" }}</small>
+                    </div>
+                    <div class="chip approved">Approved</div>
+                  </div>
+                {% endfor %}
+              {% else %}
+                <div class="row">
+                  <div>
+                    <b>No approved donations yet</b>
+                    <small>Please check again later.</small>
+                  </div>
+                  <div class="chip info">Info</div>
+                </div>
+              {% endif %}
+            </div>
+
+            <div class="actions">
+              <a class="btn btn-mint" href="{{ url_for('beneficiary_available_donations') }}">Browse</a>
+              <a class="btn btn-ghost" href="{{ url_for('beneficiary_requests') }}">My Requests</a>
+            </div>
+
+            <div style="height:12px"></div>
+
+            <h3>My Latest Requests</h3>
+            <p class="sub">Track what you requested recently</p>
+
+            <div class="rows">
+              {% if my_latest_requests and my_latest_requests|length > 0 %}
+                {% for r in my_latest_requests %}
+                  {% set s = (r.status or "Pending")|lower %}
+                  {% set cls = "info" %}
+                  {% if s == "pending" %}{% set cls = "pending" %}{% endif %}
+                  {% if s == "approved" %}{% set cls = "approved" %}{% endif %}
+                  {% if s == "completed" %}{% set cls = "completed" %}{% endif %}
+
+                  <div class="row">
+                    <div>
+                      <b>{{ r.donation_title }}</b>
+                      <small>{{ r.created_at }}</small>
+                    </div>
+                    <div class="chip {{ cls }}">{{ r.status }}</div>
+                  </div>
+                {% endfor %}
+              {% else %}
+                <div class="row">
+                  <div>
+                    <b>You have not requested any donation yet</b>
+                    <small>Start browsing and request items you need.</small>
+                  </div>
+                  <div class="chip info">Info</div>
+                </div>
+              {% endif %}
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Right -->
+        <aside class="card">
+          <div class="panel">
+            <h3>My Profile</h3>
+            <p class="sub">Your quick information</p>
+
+            <div class="kvs">
+              <div class="kv"><span>Full Name</span><b>{{ user.full_name }}</b></div>
+              <div class="kv"><span>Phone</span><b>{{ user.phone }}</b></div>
+              <div class="kv"><span>Email</span><b>{{ user.email }}</b></div>
+              <div class="kv"><span>Address</span><b>{{ user.address }}</b></div>
+              <div class="kv"><span>Category</span><b>{{ user.category }}</b></div>
+            </div>
+
+            <div class="actions">
+              <a class="btn btn-primary" href="{{ url_for('edit_beneficiary_profile') }}">Edit Profile</a>
+              <a class="btn btn-ghost" href="{{ url_for('beneficiary_available_donations') }}">Browse</a>
+            </div>
+          </div>
+        </aside>
+
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    function animateCount(el, end){
+      const duration = 900;
+      const startTime = performance.now();
+      function step(now){
+        const p = Math.min((now - startTime) / duration, 1);
+        const value = Math.floor(end * (p * (2 - p)));
+        el.textContent = value;
+        if(p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    const counters = document.querySelectorAll("[data-count]");
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){
+          const el = e.target;
+          const end = parseInt(el.getAttribute("data-count") || "0", 10);
+          animateCount(el, isNaN(end) ? 0 : end);
+          io.unobserve(el);
+        }
+      });
+    }, {threshold: 0.35});
+    counters.forEach(c=> io.observe(c));
+  </script>
+</body>
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Select Your Role</title>
+
+    <!-- Poppins Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Poppins", sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(to bottom right, #f1f8f3, #ffffff);
+        }
+
+        /* ===== Header ===== */
+        header {
+            background: #2e7d32;
+            color: white;
+            padding: 18px 35px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .header-title {
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-align: center;
+            width: 100%;
+        }
+
+        /* ===== Back Button ===== */
+        .back-btn {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 600;
+            color: #2e7d32;
+            background: #ffffff;
+            padding: 8px 16px;
+            border-radius: 22px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            z-index: 10;
+        }
+
+        .back-btn:hover {
+            background: #1f5c24;
+            color: white;
+        }
+
+        /* ===== Main Section ===== */
+        .container {
+            min-height: calc(100vh - 90px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            font-size: 42px;
+            color: #2e7d32;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #555;
+            margin-bottom: 50px;
+        }
+
+        /* ===== Cards ===== */
+        .cards {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .card {
+            width: 320px;
+            background: white;
+            border-radius: 20px;
+            padding: 40px 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            transition: 0.35s ease;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 18px 40px rgba(0,0,0,0.25);
+        }
+
+        .icon {
+            font-size: 50px;
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            font-size: 22px;
+            color: #2e7d32;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            font-size: 15px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .card a {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        /* ===== Animation ===== */
+        .fade-in {
+            animation: fadeIn 1s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(25px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <a href="{{ url_for('home') }}" class="back-btn">← Back</a>
+        <div class="header-title">Food Surplus Donation Platform</div>
+    </header>
+
+    <div class="container fade-in">
+
+        <h1>Select Your Role</h1>
+        <p class="subtitle">Choose how you want to use the platform</p>
+
+        <div class="cards">
+
+            <!-- Provider -->
+            <div class="card">
+                <a href="{{ url_for('provider_options') }}">
+                    <div class="icon">🍽️</div>
+                    <h2>I am a Provider</h2>
+                    <p>Restaurants • Hotels • Home Kitchens</p>
+                </a>
+            </div>
+
+            <!-- Beneficiary -->
+            <div class="card">
+                <a href="{{ url_for('beneficiary_options') }}">
+                    <div class="icon">🤝</div>
+                    <h2>I am a Beneficiary</h2>
+                    <p>Families in Need • Charities • Support Centers</p>
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>
