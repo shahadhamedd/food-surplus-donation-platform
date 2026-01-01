@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>التقارير والإحصائيات</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{--bg:#0b0f14;--panel:rgba(255,255,255,0.06);--border:rgba(255,255,255,0.10);--text:rgba(255,255,255,0.92);--muted:rgba(255,255,255,0.60);--green:#2bb865;--radius:18px;--shadow:0 22px 70px rgba(0,0,0,0.55);}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Poppins,sans-serif;color:var(--text);min-height:100vh;background:radial-gradient(800px 500px at 20% 10%, rgba(43,184,101,0.18), transparent 60%),radial-gradient(900px 550px at 90% 40%, rgba(90,140,255,0.16), transparent 60%),var(--bg);}
+    .wrap{max-width:1100px;margin:0 auto;padding:24px;opacity:0;transform:translateY(10px);animation:in 600ms ease forwards;}
+    @keyframes in{to{opacity:1;transform:translateY(0)}}
+    h1{margin:0;font-size:22px;font-weight:900}
+    .sub{margin:6px 0 16px;color:var(--muted);font-size:13px}
+    .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+    .card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px;transition:transform .18s ease,border-color .18s ease}
+    .card:hover{transform:translateY(-3px);border-color:rgba(43,184,101,0.25)}
+    .lbl{color:var(--muted);font-size:12px;font-weight:800}
+    .val{font-size:26px;font-weight:900;margin-top:6px}
+    .btn{margin-top:14px;display:inline-flex;text-decoration:none;padding:12px 14px;border-radius:14px;font-weight:900;font-size:13px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:var(--text);transition:transform .18s ease}
+    .btn:hover{transform:translateY(-2px)}
+    @media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>التقارير والإحصائيات</h1>
+    <p class="sub">ملخص سريع لأداء المنصة (Admin)</p>
+
+    <div class="grid">
+      <div class="card"><div class="lbl">إجمالي التبرعات</div><div class="val" data-count="{{ stats.total_donations }}">0</div></div>
+      <div class="card"><div class="lbl">التبرعات المعلقة</div><div class="val" data-count="{{ stats.pending_donations }}">0</div></div>
+      <div class="card"><div class="lbl">التبرعات المعتمدة</div><div class="val" data-count="{{ stats.approved_donations }}">0</div></div>
+      <div class="card"><div class="lbl">الطلبات المستلمة</div><div class="val" data-count="{{ stats.requests_received }}">0</div></div>
+    </div>
+
+    <div style="height:12px"></div>
+
+    <div class="grid">
+      <div class="card"><div class="lbl">طلبات Pending</div><div class="val" data-count="{{ stats.req_pending }}">0</div></div>
+      <div class="card"><div class="lbl">طلبات Approved</div><div class="val" data-count="{{ stats.req_approved }}">0</div></div>
+      <div class="card"><div class="lbl">طلبات Completed</div><div class="val" data-count="{{ stats.req_completed }}">0</div></div>
+      <div class="card"><div class="lbl">معلومات</div><div class="val">📊</div></div>
+    </div>
+
+    <a class="btn" href="{{ url_for('owner_panel') }}">⬅ الرجوع للادمن</a>
+  </div>
+
+  <script>
+    function animateCount(el, end){
+      const duration=900, startTime=performance.now();
+      function step(now){
+        const p=Math.min((now-startTime)/duration,1);
+        const v=Math.floor(end*(p*(2-p)));
+        el.textContent=v;
+        if(p<1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+    const els=document.querySelectorAll("[data-count]");
+    const io=new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){
+          const el=e.target;
+          const end=parseInt(el.getAttribute("data-count")||"0",10);
+          animateCount(el, isNaN(end)?0:end);
+          io.unobserve(el);
+        }
+      });
+    },{threshold:.35});
+    els.forEach(x=>io.observe(x));
+  </script>
+</body>
+</html>

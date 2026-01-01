@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>إضافة تبرع - FSDP</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --panel: rgba(255,255,255,0.06);
+      --panel2: rgba(255,255,255,0.04);
+      --border: rgba(255,255,255,0.10);
+
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.60);
+
+      --green:#2bb865;
+      --green2:#1b8f47;
+      --blue:#6aa8ff;
+
+      --shadow: 0 22px 70px rgba(0,0,0,0.55);
+      --shadow2: 0 14px 34px rgba(0,0,0,0.38);
+
+      --radius:18px;
+    }
+
+    *{ box-sizing:border-box; }
+    html, body{ width:100%; height:100%; }
+
+    body{
+      margin:0;
+      font-family:"Poppins", sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      background:
+        radial-gradient(800px 500px at 20% 10%, rgba(43,184,101,0.18), transparent 60%),
+        radial-gradient(900px 550px at 90% 40%, rgba(90,140,255,0.16), transparent 60%),
+        var(--bg);
+    }
+
+    /* ✅ يعزل الطبقات ويمنع أي overlay/blur يختلط */
+    .layout{
+      display:flex;
+      min-height:100vh;
+      position:relative;
+      isolation:isolate;
+    }
+
+    /* Sidebar (Modern Dark) */
+    .sidebar{
+      width: 290px;
+      padding: 18px;
+      border-left: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.02);
+      backdrop-filter: blur(10px);
+      display:flex;
+      flex-direction:column;
+      gap: 14px;
+      z-index: 2;
+      min-width: 290px;
+    }
+
+    .brand{
+      text-decoration:none;
+      color:inherit;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding: 14px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+      border: 1px solid rgba(255,255,255,0.10);
+      box-shadow: var(--shadow2);
+      transition: transform .18s ease, border-color .18s ease;
+      min-width: 0;
+    }
+    .brand:hover{ transform: translateY(-2px); border-color: rgba(43,184,101,0.22); }
+
+    /* ✅ أهم إصلاح: logo-img كان ناقص */
+    .logo-img{
+      width:46px;
+      height:46px;
+      border-radius:16px;
+      object-fit:contain;
+      display:block;
+      padding:6px;
+      background: linear-gradient(135deg, rgba(43,184,101,1), rgba(106,168,255,1));
+      box-shadow: 0 18px 32px rgba(43,184,101,0.18);
+      flex:0 0 auto;
+    }
+
+    .brand h3{ margin:0; font-size:15px; font-weight:900; }
+    .brand p{ margin:2px 0 0; font-size:12px; color:var(--muted); font-weight:700; }
+
+    .user-card{
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 18px;
+      padding: 14px;
+      box-shadow: var(--shadow2);
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      min-width:0;
+    }
+    .avatar{
+      width:44px;height:44px;border-radius:16px;
+      background: rgba(255,255,255,0.08);
+      display:flex;align-items:center;justify-content:center;
+      font-weight:900;color: rgba(255,255,255,0.9);
+      overflow:hidden;flex:0 0 auto;
+      border: 1px solid rgba(255,255,255,0.10);
+    }
+    .avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
+    .user-meta{ min-width:0; }
+    .name{ margin:0; font-weight:900; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .role{ margin:2px 0 0; font-size:12px; color:var(--muted); font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+    .nav{ display:flex; flex-direction:column; gap:8px; }
+    .nav a{
+      text-decoration:none;
+      color: var(--text);
+      font-weight:800;
+      font-size:13px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      transition: transform .18s ease, background .18s ease, border-color .18s ease;
+    }
+    .nav a:hover{
+      transform: translateY(-2px);
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(43,184,101,0.22);
+    }
+    .nav .active{
+      background: rgba(43,184,101,0.12);
+      border-color: rgba(43,184,101,0.22);
+    }
+    .nav .left{ display:flex; align-items:center; gap:10px; min-width:0; }
+    .ic{
+      width:30px; height:30px; border-radius:12px;
+      display:grid; place-items:center;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      font-size:15px;
+      flex:0 0 auto;
+    }
+
+    .spacer{ flex:1; }
+
+    .logout{
+      margin-top:auto;
+      text-decoration:none;
+      color:#ff6b6b;
+      font-weight:900;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 16px;
+      padding: 12px 14px;
+      display:flex; align-items:center; justify-content:center; gap:10px;
+      box-shadow: var(--shadow2);
+      transition: transform .18s ease, background .18s ease;
+    }
+    .logout:hover{ transform: translateY(-2px); background: rgba(255,255,255,0.06); }
+
+    /* Main */
+    .main{
+      flex:1;
+      padding: 22px 22px 28px;
+      min-width: 0;
+      z-index: 1;
+    }
+
+    .topbar{
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 20px;
+      box-shadow: var(--shadow2);
+      padding: 18px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      backdrop-filter: blur(12px);
+      min-width:0;
+    }
+
+    .title h2{ margin:0; font-size:20px; font-weight:900; }
+    .title p{ margin:2px 0 0; color:var(--muted); font-size:12px; font-weight:700; }
+
+    .btn-ghost{
+      text-decoration:none;
+      padding: 11px 14px;
+      border-radius: 14px;
+      font-weight:900;
+      font-size:13px;
+      color: var(--text);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.10);
+      transition: transform .18s ease, background .18s ease;
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      white-space:nowrap;
+    }
+    .btn-ghost:hover{ transform: translateY(-2px); background: rgba(255,255,255,0.06); }
+
+    .card{
+      margin-top: 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 16px;
+      backdrop-filter: blur(12px);
+      overflow:hidden;
+    }
+
+    .hint{
+      margin: 8px 0 14px;
+      color: var(--muted);
+      font-weight:700;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .form-grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .field{ display:flex; flex-direction:column; gap:7px; }
+    label{ font-size:12px; font-weight:900; color: rgba(255,255,255,0.72); }
+
+    input, textarea{
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 16px;
+      padding: 12px 12px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      outline:none;
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+    }
+
+    textarea{ min-height: 120px; resize: vertical; grid-column: 1 / -1; }
+
+    input::placeholder, textarea::placeholder{
+      color: rgba(255,255,255,0.45);
+      font-weight: 700;
+    }
+
+    input:focus, textarea:focus{
+      border-color: rgba(43,184,101,0.30);
+      box-shadow: 0 0 0 4px rgba(43,184,101,0.12);
+    }
+
+    .btn-row{
+      margin-top: 14px;
+      display:flex;
+      gap: 10px;
+      flex-wrap:wrap;
+      justify-content:flex-start;
+    }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-radius: 16px;
+      text-decoration:none;
+      font-weight: 900;
+      font-size: 13px;
+      border: 1px solid rgba(255,255,255,0.10);
+      cursor:pointer;
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      transition: transform .18s ease, filter .18s ease, background .18s ease;
+      white-space:nowrap;
+    }
+    .btn:hover{ transform: translateY(-2px); background: rgba(255,255,255,0.06); }
+
+    .btn-green{
+      background: linear-gradient(180deg, var(--green), var(--green2));
+      color:#06120b;
+      border-color: transparent;
+      box-shadow: 0 18px 34px rgba(43,184,101,0.18);
+    }
+    .btn-green:hover{ filter: brightness(1.05); }
+
+    .msg{
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 16px;
+      font-weight: 900;
+      font-size: 13px;
+      border: 1px solid rgba(43,184,101,0.22);
+      background: rgba(43,184,101,0.10);
+      color: #dfffe9;
+    }
+
+    @media (max-width: 980px){
+      .sidebar{ display:none; }
+      .form-grid{ grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+<div class="layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <a class="brand" href="{{ url_for('home') }}">
+      <img class="logo-img" src="{{ url_for('static', filename='img/fsdp_logo.png') }}" alt="FSDP Logo">
+      <div>
+        <h3>FSDP Provider</h3>
+        <p>Modern dark workspace</p>
+      </div>
+    </a>
+
+    <div class="user-card">
+      <div class="avatar">
+        {% if user.image %}
+          <img src="{{ url_for('uploaded_file', filename=user.image) }}" alt="Profile">
+        {% else %}
+          {{ (user.full_name[:1] if user.full_name else "P") }}
+        {% endif %}
+      </div>
+      <div class="user-meta">
+        <p class="name">{{ user.full_name }}</p>
+        <p class="role">{{ user.category }}</p>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <a href="{{ url_for('provider_dashboard') }}">
+        <span class="left"><span class="ic">🏠</span>لوحة التحكم</span>
+        <span>›</span>
+      </a>
+
+      <a class="active" href="{{ url_for('provider_add_donation') }}">
+        <span class="left"><span class="ic">➕</span>إضافة تبرع</span>
+        <span>›</span>
+      </a>
+
+      <a href="{{ url_for('provider_my_donations') }}">
+        <span class="left"><span class="ic">📦</span>تبرعاتي</span>
+        <span>›</span>
+      </a>
+
+      <a href="{{ url_for('provider_requests_received') }}">
+        <span class="left"><span class="ic">📨</span>الطلبات المستلمة</span>
+        <span>›</span>
+      </a>
+
+      <a href="{{ url_for('provider_reports') }}">
+        <span class="left"><span class="ic">📊</span>التقارير</span>
+        <span>›</span>
+      </a>
+
+      <a href="{{ url_for('provider_profile_edit') }}">
+        <span class="left"><span class="ic">⚙️</span>الإعدادات</span>
+        <span>›</span>
+      </a>
+    </nav>
+
+    <div class="spacer"></div>
+    <a class="logout" href="{{ url_for('logout') }}">⎋ تسجيل خروج</a>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="topbar">
+      <div class="title">
+        <h2>إضافة تبرع</h2>
+        <p>قم بإدخال تفاصيل التبرع. الحالة ستكون “قيد المراجعة” حتى الاعتماد</p>
+      </div>
+      <a class="btn-ghost" href="{{ url_for('provider_dashboard') }}">← رجوع للوحة التحكم</a>
+    </div>
+
+    <div class="card">
+      <div class="hint">
+        <b>ملاحظة:</b> بعد الإضافة سيتم حفظ التبرع بحالة <b>Pending</b> حتى يقوم المالك بالموافقة عليه.
+      </div>
+
+      <form method="POST">
+        <div class="form-grid">
+
+          <div class="field">
+            <label>عنوان التبرع</label>
+            <input type="text" name="title" placeholder="مثال: وجبات مطبوخة، خبز، فواكه" required>
+          </div>
+
+          <div class="field">
+            <label>الكمية</label>
+            <input type="text" name="quantity" placeholder="مثال: 10 صناديق، 5 كجم، 20 وجبة">
+          </div>
+
+          <div class="field">
+            <label>التصنيف</label>
+            <input type="text" name="category" placeholder="مثال: Meals, Bakery, Vegetables">
+          </div>
+
+          <div class="field">
+            <label>ملاحظات (اختياري)</label>
+            <input type="text" name="notes" placeholder="أي معلومات إضافية (لن تُحفظ إذا لا يوجد عمود بالقاعدة)">
+          </div>
+
+          <div class="field" style="grid-column:1/-1;">
+            <label>الوصف</label>
+            <textarea name="description" placeholder="اكتب تفاصيل التبرع، طريقة الاستلام، وقت الاستلام…"></textarea>
+          </div>
+
+        </div>
+
+        <div class="btn-row">
+          <a class="btn" href="{{ url_for('provider_dashboard') }}">إلغاء</a>
+          <button class="btn btn-green" type="submit">➕ حفظ التبرع</button>
+        </div>
+      </form>
+
+      {% if msg %}
+        <div class="msg">{{ msg }}</div>
+      {% endif %}
+    </div>
+  </main>
+
+</div>
+</body>
+</html>

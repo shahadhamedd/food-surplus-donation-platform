@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Beneficiary Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#f7f7ff;
+      --text:#171826;
+      --muted:#6a6f86;
+
+      --violet:#6d5efc;
+      --violet2:#9b7bff;
+      --mint:#26c281;
+      --mint2:#18a86f;
+      --peach:#ffb347;
+
+      --card:rgba(255,255,255,0.86);
+      --stroke:rgba(109,94,252,0.14);
+      --shadow:0 18px 45px rgba(31, 25, 80, 0.12);
+      --shadow2:0 10px 28px rgba(31, 25, 80, 0.08);
+      --r:22px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Poppins, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(900px 520px at 10% 10%, rgba(109,94,252,0.16), transparent 60%),
+        radial-gradient(900px 520px at 85% 20%, rgba(38,194,129,0.12), transparent 60%),
+        radial-gradient(900px 520px at 55% 90%, rgba(255,179,71,0.12), transparent 60%),
+        var(--bg);
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+
+    .page{
+      display:grid;
+      grid-template-columns: 300px 1fr;
+      min-height:100vh;
+      opacity:0;
+      transform: translateY(10px);
+      animation: enter 650ms ease forwards;
+    }
+    @keyframes enter{to{opacity:1; transform: translateY(0);} }
+
+    /* ✅ language switching */
+    body[dir="rtl"]{
+      direction: rtl;
+      font-family: Tahoma, Arial, sans-serif;
+    }
+    body[dir="rtl"] .page{
+      grid-template-columns: 1fr 300px;
+    }
+    body[dir="rtl"] .sidebar{
+      border-right:none;
+      border-left: 1px solid rgba(109,94,252,0.10);
+    }
+
+    /* =========================
+       ✅ UPDATED: Language Switch (TOP RIGHT next to email)
+       ========================= */
+    .lang-top{
+      display:flex;
+      gap:8px;
+      padding:6px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.62);
+      border: 1px solid rgba(109,94,252,0.14);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow2);
+      align-items:center;
+    }
+
+    .lang-btn{
+      width:34px;
+      height:34px;
+      border-radius: 12px;
+      border: 1px solid rgba(109,94,252,0.14);
+      background: rgba(255,255,255,0.90);
+      cursor:pointer;
+      display:grid;
+      place-items:center;
+      padding:0;
+      transition: transform .18s ease, filter .18s ease;
+      position:relative;
+      overflow:hidden;
+    }
+    .lang-btn:hover{transform: translateY(-2px); filter:brightness(1.03);}
+    .lang-btn.active{
+      background: linear-gradient(180deg, var(--violet2), var(--violet));
+      border-color: rgba(109,94,252,0.18);
+    }
+
+    .flag{
+      width:18px;
+      height:18px;
+      border-radius: 5px;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.10);
+      border:1px solid rgba(0,0,0,0.10);
+      display:block;
+    }
+
+    /* inline SVG flags via data-uri */
+    .flag-om{
+      content:"";
+      background-size: cover;
+      background-position:center;
+      background-repeat:no-repeat;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' ry='8' fill='%23fff'/%3E%3Crect x='0' y='0' width='18' height='64' fill='%23d81f26'/%3E%3Crect x='18' y='0' width='46' height='21.33' fill='%23ffffff'/%3E%3Crect x='18' y='21.33' width='46' height='21.33' fill='%23d81f26'/%3E%3Crect x='18' y='42.66' width='46' height='21.34' fill='%23008043'/%3E%3C/svg%3E");
+    }
+
+    .flag-gb{
+      content:"";
+      background-size: cover;
+      background-position:center;
+      background-repeat:no-repeat;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' ry='8' fill='%23012169'/%3E%3Cpath d='M0 8 L8 0 H18 L0 18 Z' fill='%23fff' opacity='0.95'/%3E%3Cpath d='M64 8 L56 0 H46 L64 18 Z' fill='%23fff' opacity='0.95'/%3E%3Cpath d='M0 56 L8 64 H18 L0 46 Z' fill='%23fff' opacity='0.95'/%3E%3Cpath d='M64 56 L56 64 H46 L64 46 Z' fill='%23fff' opacity='0.95'/%3E%3Crect x='0' y='27' width='64' height='10' fill='%23fff'/%3E%3Crect x='27' y='0' width='10' height='64' fill='%23fff'/%3E%3Crect x='0' y='29' width='64' height='6' fill='%23c8102e'/%3E%3Crect x='29' y='0' width='6' height='64' fill='%23c8102e'/%3E%3C/svg%3E");
+    }
+
+    /* Sidebar */
+    .sidebar{
+      padding:22px;
+      position:sticky;
+      top:0;
+      height:100vh;
+      background: linear-gradient(180deg, rgba(255,255,255,0.62), rgba(255,255,255,0.42));
+      backdrop-filter: blur(12px);
+      border-right: 1px solid rgba(109,94,252,0.10);
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    .brand{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      padding:16px;
+      border-radius: var(--r);
+      background: linear-gradient(135deg, rgba(109,94,252,0.18), rgba(255,255,255,0.75));
+      border:1px solid rgba(109,94,252,0.14);
+      box-shadow: var(--shadow2);
+      text-decoration:none;
+      color: inherit;
+    }
+
+    .logo-img{
+      width:48px;
+      height:48px;
+      border-radius:18px;
+      object-fit:contain;
+      background:
+        radial-gradient(22px 22px at 30% 30%, rgba(255,255,255,0.85), rgba(255,255,255,0.45)),
+        linear-gradient(180deg, rgba(109,94,252,0.28), rgba(109,94,252,0.10));
+      border:1px solid rgba(109,94,252,0.18);
+      padding: 6px;
+      display:block;
+    }
+
+    .brand h3{margin:0;font-size:14px;font-weight:900}
+    .brand p{margin:2px 0 0;font-size:12px;color:var(--muted);font-weight:700}
+
+    .profile-mini{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:14px;
+      border-radius: var(--r);
+      background: rgba(255,255,255,0.78);
+      border:1px solid rgba(109,94,252,0.12);
+      box-shadow: var(--shadow2);
+    }
+    .avatar{
+      width:46px;height:46px;border-radius:18px;
+      display:grid;place-items:center;
+      font-weight:900;
+      color:#2b236a;
+      background: rgba(109,94,252,0.12);
+      border:1px solid rgba(109,94,252,0.18);
+      overflow:hidden;
+      flex:0 0 auto;
+    }
+    .meta{min-width:0;}
+    .name{margin:0;font-weight:900;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .cat{margin:2px 0 0;color:var(--muted);font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+    .search{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:12px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.78);
+      border:1px solid rgba(109,94,252,0.12);
+      box-shadow: var(--shadow2);
+    }
+    .search input{
+      width:100%;
+      border:none;
+      outline:none;
+      background: transparent;
+      font-weight:700;
+      color:var(--text);
+    }
+    .search button{
+      width:42px;height:42px;border-radius:16px;
+      border:none;cursor:pointer;
+      background: linear-gradient(180deg, var(--violet2), var(--violet));
+      color:#fff;
+      font-weight:900;
+      transition: transform .18s ease, filter .18s ease;
+    }
+    .search button:hover{transform: translateY(-2px); filter:brightness(1.05);}
+
+    .nav{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin-top:2px;
+    }
+    .nav a{
+      text-decoration:none;
+      color:var(--text);
+      padding:12px 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.76);
+      border:1px solid rgba(109,94,252,0.12);
+      box-shadow: var(--shadow2);
+      display:flex;
+      align-items:center;
+      gap:12px;
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .nav a:hover{transform: translateY(-2px); box-shadow: var(--shadow);}
+    .nav a.active{
+      border-color: rgba(109,94,252,0.22);
+      background: linear-gradient(135deg, rgba(109,94,252,0.14), rgba(255,255,255,0.80));
+    }
+    .ic{
+      width:36px;height:36px;border-radius:16px;
+      display:grid;place-items:center;
+      background: rgba(109,94,252,0.10);
+      border:1px solid rgba(109,94,252,0.14);
+      color:#2b236a;
+      font-weight:900;
+      flex:0 0 auto;
+    }
+
+    .logout{
+      margin-top:auto;
+      padding-top:10px;
+    }
+    .logout a{
+      display:flex;align-items:center;justify-content:center;
+      padding:12px;
+      border-radius: 18px;
+      text-decoration:none;
+      font-weight:900;
+      color:#ff3b3b;
+      background: rgba(255,59,59,0.10);
+      border:1px solid rgba(255,59,59,0.18);
+      transition: transform .18s ease;
+      box-shadow: var(--shadow2);
+    }
+    .logout a:hover{transform: translateY(-2px);}
+
+    /* Main */
+    .main{
+      padding:26px 26px 30px;
+    }
+
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin-bottom:16px;
+    }
+    .title h1{margin:0;font-size:24px;font-weight:900}
+    .title p{margin:6px 0 0;color:var(--muted);font-size:13px;font-weight:700}
+
+    .right{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .pill{
+      padding:10px 12px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.82);
+      border:1px solid rgba(109,94,252,0.12);
+      box-shadow: var(--shadow2);
+      font-size:12px;
+      color:var(--muted);
+      max-width: 360px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      font-weight:700;
+    }
+    .pill b{color:var(--text);}
+
+    /* Hero */
+    .hero{
+      position:relative;
+      border-radius: var(--r);
+      background:
+        radial-gradient(420px 220px at 15% 20%, rgba(109,94,252,0.22), transparent 60%),
+        radial-gradient(420px 220px at 80% 30%, rgba(38,194,129,0.18), transparent 60%),
+        rgba(255,255,255,0.78);
+      border:1px solid rgba(109,94,252,0.12);
+      box-shadow: var(--shadow);
+      padding:18px;
+      display:grid;
+      grid-template-columns: 1.3fr 0.7fr;
+      gap:14px;
+      overflow:hidden;
+      margin-bottom:14px;
+    }
+    .hero:after{
+      content:"";
+      position:absolute;
+      left:-60px; bottom:-70px;
+      width:240px;height:240px;border-radius:999px;
+      background: rgba(109,94,252,0.12);
+      filter: blur(0.2px);
+    }
+    .hero h2{margin:0;font-weight:900}
+    .hero p{margin:6px 0 0;color:var(--muted);font-weight:700;font-size:13px}
+    .tag{
+      margin-top:10px;
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      background: rgba(255,255,255,0.85);
+      border:1px solid rgba(109,94,252,0.14);
+      padding:10px 12px;
+      border-radius: 999px;
+      font-size:12px;
+      font-weight:900;
+      color:#2b236a;
+      box-shadow: var(--shadow2);
+    }
+
+    .hero-right{
+      display:grid;
+      gap:10px;
+      align-content:start;
+      position:relative;
+      z-index:1;
+    }
+    .mini-card{
+      border-radius: 18px;
+      background: rgba(255,255,255,0.82);
+      border:1px solid rgba(109,94,252,0.12);
+      box-shadow: var(--shadow2);
+      padding:12px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      transition: transform .18s ease;
+    }
+    .mini-card:hover{transform: translateY(-2px);}
+    .mini-card b{font-size:12px;}
+    .mini-ic{
+      width:44px;height:44px;border-radius:18px;
+      display:grid;place-items:center;
+      font-weight:900;
+      color:#2b236a;
+      background: rgba(109,94,252,0.10);
+      border:1px solid rgba(109,94,252,0.14);
+      flex:0 0 auto;
+    }
+
+    /* Stats */
+    .stats{
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap:12px;
+      margin-bottom:14px;
+    }
+    .stat{
+      border-radius: var(--r);
+      background: rgba(255,255,255,0.82);
+      border:1px solid rgba(109,94,252,0.12);
+      box-shadow: var(--shadow2);
+      padding:14px;
+      transition: transform .18s ease;
+      position:relative;
+      overflow:hidden;
+    }
+    .stat:hover{transform: translateY(-2px);}
+    .lbl{color:var(--muted); font-size:12px; font-weight:800}
+    .val{font-size:24px; font-weight:900; margin-top:6px}
+    .stat .icon{
+      position:absolute;
+      right:12px; top:12px;
+      width:44px;height:44px;border-radius:18px;
+      display:grid;place-items:center;
+      background: rgba(109,94,252,0.10);
+      border:1px solid rgba(109,94,252,0.14);
+      color:#2b236a;
+      font-weight:900;
+    }
+    .stat.mint .icon{background: rgba(38,194,129,0.10); border-color: rgba(38,194,129,0.16);}
+    .stat.peach .icon{background: rgba(255,179,71,0.12); border-color: rgba(255,179,71,0.18);}
+
+    /* Grid */
+    .grid{
+      display:grid;
+      grid-template-columns: 1.25fr 0.75fr;
+      gap:16px;
+      align-items:start;
+    }
+
+    .card{
+      border-radius: var(--r);
+      background: rgba(255,255,255,0.82);
+      border:1px solid rgba(109,94,252,0.12);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .panel{padding:16px}
+    .panel h3{margin:0;font-size:15px;font-weight:900}
+    .sub{margin:6px 0 0;color:var(--muted);font-size:12px;font-weight:700}
+
+    .rows{margin-top:12px; display:flex; flex-direction:column; gap:10px;}
+    .row{
+      padding:12px;
+      border-radius: 18px;
+      background: rgba(109,94,252,0.06);
+      border:1px solid rgba(109,94,252,0.10);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      transition: transform .18s ease;
+    }
+    .row:hover{transform: translateY(-2px);}
+    .row b{font-size:13px}
+    .row small{display:block;margin-top:2px;color:var(--muted);font-size:12px;font-weight:700}
+
+    .chip{
+      padding:7px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:900;
+      background: rgba(255,255,255,0.90);
+      border:1px solid rgba(109,94,252,0.14);
+      color:#2b236a;
+      white-space:nowrap;
+    }
+    .chip.pending{border-color: rgba(255,179,71,0.25); background: rgba(255,179,71,0.14); color:#7a4a00;}
+    .chip.approved{border-color: rgba(38,194,129,0.25); background: rgba(38,194,129,0.14); color:#0f5e3d;}
+    .chip.completed{border-color: rgba(109,94,252,0.22); background: rgba(109,94,252,0.12); color:#2b236a;}
+    .chip.info{border-color: rgba(109,94,252,0.14); background: rgba(255,255,255,0.92); color:#2b236a;}
+
+    .actions{
+      display:flex;
+      gap:10px;
+      margin-top:12px;
+      flex-wrap:wrap;
+    }
+    .btn{
+      flex:1;
+      min-width: 160px;
+      padding:12px 14px;
+      border-radius: 18px;
+      border:none;
+      cursor:pointer;
+      font-weight:900;
+      text-decoration:none;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      gap:10px;
+      transition: transform .18s ease, filter .18s ease;
+    }
+    .btn:hover{transform: translateY(-2px); filter:brightness(1.05);}
+    .btn-primary{
+      background: linear-gradient(180deg, var(--violet2), var(--violet));
+      color:#fff;
+      box-shadow: 0 18px 35px rgba(109,94,252,0.18);
+    }
+    .btn-mint{
+      background: linear-gradient(180deg, rgba(38,194,129,0.95), rgba(24,168,111,0.95));
+      color:#fff;
+      box-shadow: 0 18px 35px rgba(38,194,129,0.16);
+    }
+    .btn-ghost{
+      background: rgba(255,255,255,0.90);
+      border:1px solid rgba(109,94,252,0.14);
+      color: var(--text);
+    }
+
+    .kvs{margin-top:12px; display:grid; gap:10px;}
+    .kv{
+      padding:10px 12px;
+      border-radius: 18px;
+      background: rgba(109,94,252,0.06);
+      border:1px solid rgba(109,94,252,0.10);
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .kv span{font-size:12px;color:var(--muted);font-weight:800}
+    .kv b{font-size:12.5px}
+
+    @media (max-width: 1100px){
+      .stats{grid-template-columns: repeat(2, 1fr);}
+      .grid{grid-template-columns: 1fr;}
+      .sidebar{position:relative;height:auto;}
+      .page{grid-template-columns: 1fr;}
+      .hero{grid-template-columns: 1fr;}
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="page">
+
+    <aside class="sidebar">
+      <a class="brand" href="{{ url_for('home') }}">
+        <img class="logo-img" src="{{ url_for('static', filename='img/fsdp_logo.png') }}" alt="FSDP Logo">
+        <div>
+          <h3 data-en="FSDP Beneficiary" data-ar="مستفيد FSDP">FSDP Beneficiary</h3>
+          <p data-en="Community support dashboard" data-ar="لوحة دعم المجتمع">Community support dashboard</p>
+        </div>
+      </a>
+
+      <div class="profile-mini">
+        <div class="avatar">
+          {{ (user.full_name[:1] if user and user.full_name else "B") }}
+        </div>
+        <div class="meta">
+          <p class="name">{{ user.full_name }}</p>
+          <p class="cat">
+            <span data-en="Category" data-ar="الفئة">Category</span>:
+            <span>{{ user.category }}</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="search">
+        <input id="searchBox" type="text" placeholder="Search donations...">
+        <button type="button">⌕</button>
+      </div>
+
+      <nav class="nav">
+        <a class="active" href="{{ url_for('beneficiary_dashboard') }}">
+          <div class="ic">🏠</div>
+          <span data-en="Dashboard" data-ar="الرئيسية">Dashboard</span>
+        </a>
+        <a href="{{ url_for('beneficiary_available_donations') }}">
+          <div class="ic">🎁</div>
+          <span data-en="Available Donations" data-ar="التبرعات المتاحة">Available Donations</span>
+        </a>
+        <a href="{{ url_for('beneficiary_requests') }}">
+          <div class="ic">📌</div>
+          <span data-en="My Requests" data-ar="طلباتي">My Requests</span>
+        </a>
+        <a href="{{ url_for('edit_beneficiary_profile') }}">
+          <div class="ic">⚙️</div>
+          <span data-en="Profile / Settings" data-ar="الملف الشخصي / الإعدادات">Profile / Settings</span>
+        </a>
+      </nav>
+
+      <div class="logout">
+        <a href="{{ url_for('logout') }}">
+          <span data-en="Logout" data-ar="تسجيل خروج">Logout</span>
+        </a>
+      </div>
+    </aside>
+
+    <main class="main">
+
+      <div class="topbar">
+        <div class="title">
+          <h1 data-en="Dashboard" data-ar="لوحة التحكم">Dashboard</h1>
+          <p data-en="Browse available donations and track your requests" data-ar="تصفح التبرعات وتتبع طلباتك">
+            Browse available donations and track your requests
+          </p>
+        </div>
+
+        <div class="right">
+          <div class="pill"><b>{{ user.email }}</b></div>
+
+          <!-- ✅ Language buttons moved here (top-right next to email) -->
+          <div class="lang-top" aria-label="Language switch">
+            <button type="button" id="btn-ar" class="lang-btn" aria-label="Arabic" title="Arabic">
+              <span class="flag flag-om"></span>
+            </button>
+            <button type="button" id="btn-en" class="lang-btn" aria-label="English" title="English">
+              <span class="flag flag-gb"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <section class="hero">
+        <div style="position:relative; z-index:1;">
+          <h2>
+            <span data-en="Hi" data-ar="مرحبًا">Hi</span>, {{ user.full_name }}
+          </h2>
+          <p data-en="Ready to request food surplus items and support your community?"
+             data-ar="جاهز تطلب فائض الطعام وتدعم مجتمعك؟">
+            Ready to request food surplus items and support your community?
+          </p>
+          <div class="tag">
+            <span data-en="Category" data-ar="الفئة">Category</span>:
+            <span style="color:var(--text); font-weight:900;">{{ user.category }}</span>
+          </div>
+        </div>
+
+        <div class="hero-right">
+          <div class="mini-card">
+            <div>
+              <b data-en="Available now" data-ar="متاح الآن">Available now</b>
+              <div style="font-size:12px; color:var(--muted); font-weight:700; margin-top:2px;"
+                   data-en="Approved donations"
+                   data-ar="تبرعات معتمدة">
+                Approved donations
+              </div>
+            </div>
+            <div class="mini-ic">🎁</div>
+          </div>
+
+          <div class="mini-card">
+            <div>
+              <b data-en="Track requests" data-ar="تتبع الطلبات">Track requests</b>
+              <div style="font-size:12px; color:var(--muted); font-weight:700; margin-top:2px;"
+                   data-en="Pending / Approved"
+                   data-ar="قيد الانتظار / معتمد">
+                Pending / Approved
+              </div>
+            </div>
+            <div class="mini-ic" style="background: rgba(38,194,129,0.10); border-color: rgba(38,194,129,0.16);">📌</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="stats">
+        <div class="stat mint">
+          <div class="lbl" data-en="Available Donations" data-ar="التبرعات المتاحة">Available Donations</div>
+          <div class="val" data-count="{{ stats.available_count }}">0</div>
+          <div class="icon">🎁</div>
+        </div>
+
+        <div class="stat">
+          <div class="lbl" data-en="My Requests" data-ar="طلباتي">My Requests</div>
+          <div class="val" data-count="{{ stats.my_requests_total }}">0</div>
+          <div class="icon">📌</div>
+        </div>
+
+        <div class="stat peach">
+          <div class="lbl" data-en="Pending" data-ar="قيد الانتظار">Pending</div>
+          <div class="val" data-count="{{ stats.my_requests_pending }}">0</div>
+          <div class="icon">⏳</div>
+        </div>
+
+        <div class="stat">
+          <div class="lbl" data-en="Approved" data-ar="معتمد">Approved</div>
+          <div class="val" data-count="{{ stats.my_requests_approved }}">0</div>
+          <div class="icon">✅</div>
+        </div>
+      </section>
+
+      <section class="grid">
+
+        <div class="card">
+          <div class="panel">
+            <h3 data-en="Latest Available Donations" data-ar="أحدث التبرعات المتاحة">Latest Available Donations</h3>
+            <p class="sub" data-en="A quick look at the newest approved donations" data-ar="نظرة سريعة على أحدث التبرعات المعتمدة">
+              A quick look at the newest approved donations
+            </p>
+
+            <div class="rows">
+              {% if latest_available and latest_available|length > 0 %}
+                {% for d in latest_available %}
+                  <div class="row">
+                    <div>
+                      <b>{{ d.title }}</b>
+                      <small>{{ d.quantity or "-" }} • {{ d.category or "-" }}</small>
+                    </div>
+                    <div class="chip approved" data-en="Approved" data-ar="معتمد">Approved</div>
+                  </div>
+                {% endfor %}
+              {% else %}
+                <div class="row">
+                  <div>
+                    <b data-en="No approved donations yet" data-ar="لا توجد تبرعات معتمدة بعد">No approved donations yet</b>
+                    <small data-en="Please check again later." data-ar="يرجى المحاولة لاحقًا">Please check again later.</small>
+                  </div>
+                  <div class="chip info" data-en="Info" data-ar="معلومة">Info</div>
+                </div>
+              {% endif %}
+            </div>
+
+            <div class="actions">
+              <a class="btn btn-mint" href="{{ url_for('beneficiary_available_donations') }}">
+                <span data-en="Browse" data-ar="تصفح">Browse</span>
+              </a>
+              <a class="btn btn-ghost" href="{{ url_for('beneficiary_requests') }}">
+                <span data-en="My Requests" data-ar="طلباتي">My Requests</span>
+              </a>
+            </div>
+
+            <div style="height:12px"></div>
+
+            <h3 data-en="My Latest Requests" data-ar="أحدث طلباتي">My Latest Requests</h3>
+            <p class="sub" data-en="Track what you requested recently" data-ar="تتبع ما طلبته مؤخرًا">
+              Track what you requested recently
+            </p>
+
+            <div class="rows">
+              {% if my_latest_requests and my_latest_requests|length > 0 %}
+                {% for r in my_latest_requests %}
+                  {% set s = (r.status or "Pending")|lower %}
+                  {% set cls = "info" %}
+                  {% if s == "pending" %}{% set cls = "pending" %}{% endif %}
+                  {% if s == "approved" %}{% set cls = "approved" %}{% endif %}
+                  {% if s == "completed" %}{% set cls = "completed" %}{% endif %}
+
+                  <div class="row">
+                    <div>
+                      <b>{{ r.donation_title }}</b>
+                      <small>{{ r.created_at }}</small>
+                    </div>
+                    <div class="chip {{ cls }}">{{ r.status }}</div>
+                  </div>
+                {% endfor %}
+              {% else %}
+                <div class="row">
+                  <div>
+                    <b data-en="You have not requested any donation yet" data-ar="لم تقم بطلب أي تبرع بعد">
+                      You have not requested any donation yet
+                    </b>
+                    <small data-en="Start browsing and request items you need." data-ar="ابدأ بالتصفح واطلب ما تحتاجه">
+                      Start browsing and request items you need.
+                    </small>
+                  </div>
+                  <div class="chip info" data-en="Info" data-ar="معلومة">Info</div>
+                </div>
+              {% endif %}
+            </div>
+
+          </div>
+        </div>
+
+        <aside class="card">
+          <div class="panel">
+            <h3 data-en="My Profile" data-ar="ملفي">My Profile</h3>
+            <p class="sub" data-en="Your quick information" data-ar="معلوماتك السريعة">Your quick information</p>
+
+            <div class="kvs">
+              <div class="kv"><span data-en="Full Name" data-ar="الاسم">Full Name</span><b>{{ user.full_name }}</b></div>
+              <div class="kv"><span data-en="Phone" data-ar="الهاتف">Phone</span><b>{{ user.phone }}</b></div>
+              <div class="kv"><span data-en="Email" data-ar="البريد">Email</span><b>{{ user.email }}</b></div>
+              <div class="kv"><span data-en="Address" data-ar="العنوان">Address</span><b>{{ user.address }}</b></div>
+              <div class="kv"><span data-en="Category" data-ar="الفئة">Category</span><b>{{ user.category }}</b></div>
+            </div>
+
+            <div class="actions">
+              <a class="btn btn-primary" href="{{ url_for('edit_beneficiary_profile') }}">
+                <span data-en="Edit Profile" data-ar="تعديل الملف">Edit Profile</span>
+              </a>
+              <a class="btn btn-ghost" href="{{ url_for('beneficiary_available_donations') }}">
+                <span data-en="Browse" data-ar="تصفح">Browse</span>
+              </a>
+            </div>
+          </div>
+        </aside>
+
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    // ✅ Language Switch (EN/AR)
+    const els = document.querySelectorAll("[data-en]");
+    const btnEN = document.getElementById("btn-en");
+    const btnAR = document.getElementById("btn-ar");
+    const searchBox = document.getElementById("searchBox");
+
+    function setLang(lang){
+      els.forEach(el => {
+        el.textContent = el.dataset[lang];
+      });
+
+      document.documentElement.lang = (lang === "ar") ? "ar" : "en";
+      document.body.dir = (lang === "ar") ? "rtl" : "ltr";
+
+      if(searchBox){
+        searchBox.placeholder = (lang === "ar")
+          ? "ابحث عن التبرعات... (واجهة فقط)"
+          : "Search donations... (UI only)";
+      }
+
+      localStorage.setItem("fsdp_lang", lang);
+      btnEN.classList.toggle("active", lang === "en");
+      btnAR.classList.toggle("active", lang === "ar");
+    }
+
+    btnEN.addEventListener("click", () => setLang("en"));
+    btnAR.addEventListener("click", () => setLang("ar"));
+
+    setLang(localStorage.getItem("fsdp_lang") || "en");
+
+    // Count-up animation
+    function animateCount(el, end){
+      const duration = 900;
+      const startTime = performance.now();
+      function step(now){
+        const p = Math.min((now - startTime) / duration, 1);
+        const value = Math.floor(end * (p * (2 - p)));
+        el.textContent = value;
+        if(p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    const counters = document.querySelectorAll("[data-count]");
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){
+          const el = e.target;
+          const end = parseInt(el.getAttribute("data-count") || "0", 10);
+          animateCount(el, isNaN(end) ? 0 : end);
+          io.unobserve(el);
+        }
+      });
+    }, {threshold: 0.35});
+    counters.forEach(c=> io.observe(c));
+  </script>
+</body>
+</html>

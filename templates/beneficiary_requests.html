@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Requests</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#f7f7ff;
+      --text:#171826;
+      --muted:#6a6f86;
+
+      --violet:#6d5efc;
+      --violet2:#9b7bff;
+
+      --mint:#26c281;
+      --mint2:#18a86f;
+
+      --peach:#ffb347;
+      --red:#ff3b3b;
+
+      --card:rgba(255,255,255,0.86);
+      --stroke:rgba(109,94,252,0.14);
+      --shadow:0 18px 45px rgba(31, 25, 80, 0.12);
+      --shadow2:0 10px 28px rgba(31, 25, 80, 0.08);
+
+      --r:22px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Poppins, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(900px 520px at 10% 10%, rgba(109,94,252,0.16), transparent 60%),
+        radial-gradient(900px 520px at 85% 20%, rgba(38,194,129,0.12), transparent 60%),
+        radial-gradient(900px 520px at 55% 90%, rgba(255,179,71,0.12), transparent 60%),
+        var(--bg);
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+
+    .page{
+      display:grid;
+      grid-template-columns: 300px 1fr;
+      min-height:100vh;
+      opacity:0;
+      transform: translateY(10px);
+      animation: enter 650ms ease forwards;
+    }
+    @keyframes enter{to{opacity:1; transform: translateY(0);} }
+
+    /* RTL */
+    body[dir="rtl"]{direction:rtl;font-family:Tahoma, Arial, sans-serif;}
+    body[dir="rtl"] .page{grid-template-columns: 1fr 300px;}
+    body[dir="rtl"] .sidebar{border-right:none;border-left: 1px solid rgba(109,94,252,0.10);}
+
+    /* Sidebar */
+    .sidebar{
+      padding:22px;
+      position:sticky;
+      top:0;
+      height:100vh;
+      background: linear-gradient(180deg, rgba(255,255,255,0.62), rgba(255,255,255,0.42));
+      backdrop-filter: blur(12px);
+      border-right: 1px solid rgba(109,94,252,0.10);
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    .brand{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      padding:16px;
+      border-radius: var(--r);
+      background: linear-gradient(135deg, rgba(109,94,252,0.18), rgba(255,255,255,0.75));
+      border:1px solid rgba(109,94,252,0.14);
+      box-shadow: var(--shadow2);
+      text-decoration:none;
+      color: inherit;
+    }
+    .logo-img{
+      width:48px;height:48px;border-radius:18px;
+      object-fit:contain;
+      background:
+        radial-gradient(22px 22px at 30% 30%, rgba(255,255,255,0.85), rgba(255,255,255,0.45)),
+        linear-gradient(180deg, rgba(109,94,252,0.28), rgba(109,94,252,0.10));
+      border:1px solid rgba(109,94,252,0.18);
+      padding: 6px;
+      display:block;
+    }
+    .brand h3{margin:0;font-size:14px;font-weight:900}
+    .brand p{margin:2px 0 0;font-size:12px;color:var(--muted);font-weight:700}
+
+    .profile-mini{
+      display:flex;align-items:center;gap:12px;
+      padding:14px;border-radius: var(--r);
+      background: rgba(255,255,255,0.78);
+      border:1px solid rgba(109,94,252,0.12);
+      box-shadow: var(--shadow2);
+    }
+    .avatar{
+      width:46px;height:46px;border-radius:18px;
+      display:grid;place-items:center;
+      font-weight:900;color:#2b236a;
+      background: rgba(109,94,252,0.12);
+      border:1px solid rgba(109,94,252,0.18);
+      overflow:hidden;
+      flex:0 0 auto;
+    }
+    .meta{min-width:0;}
+    .name{margin:0;font-weight:900;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .cat{margin:2px 0 0;color:var(--muted);font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+    .nav{display:flex;flex-direction:column;gap:10px;margin-top:2px;}
+    .nav a{
+      text-decoration:none;color:var(--text);
+      padding:12px 14px;border-radius: 18px;
+      background: rgba(255,255,255,0.76);
+      border:1px solid rgba(109,94,252,0.12);
+      box-shadow: var(--shadow2);
+      display:flex;align-items:center;gap:12px;
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .nav a:hover{transform: translateY(-2px); box-shadow: var(--shadow);}
+    .nav a.active{
+      border-color: rgba(109,94,252,0.22);
+      background: linear-gradient(135deg, rgba(109,94,252,0.14), rgba(255,255,255,0.80));
+    }
+    .ic{
+      width:36px;height:36px;border-radius:16px;
+      display:grid;place-items:center;
+      background: rgba(109,94,252,0.10);
+      border:1px solid rgba(109,94,252,0.14);
+      color:#2b236a;
+      font-weight:900;
+      flex:0 0 auto;
+    }
+
+    .logout{margin-top:auto;padding-top:10px;}
+    .logout a{
+      display:flex;align-items:center;justify-content:center;
+      padding:12px;border-radius: 18px;
+      text-decoration:none;font-weight:900;color:var(--red);
+      background: rgba(255,59,59,0.10);
+      border:1px solid rgba(255,59,59,0.18);
+      transition: transform .18s ease;
+      box-shadow: var(--shadow2);
+    }
+    .logout a:hover{transform: translateY(-2px);}
+
+    /* Main */
+    .main{padding:26px 26px 30px;}
+
+    .topbar{
+      display:flex;justify-content:space-between;align-items:center;gap:12px;
+      margin-bottom:16px;
+    }
+    .title h1{margin:0;font-size:24px;font-weight:900}
+    .title p{margin:6px 0 0;color:var(--muted);font-size:13px;font-weight:700}
+
+    .right{
+      display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end;
+    }
+    .pill{
+      padding:10px 12px;border-radius: 18px;
+      background: rgba(255,255,255,0.82);
+      border:1px solid rgba(109,94,252,0.12);
+      box-shadow: var(--shadow2);
+      font-size:12px;color:var(--muted);
+      max-width: 360px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+      font-weight:700;
+    }
+    .pill b{color:var(--text);}
+
+    /* Language switch (top right) */
+    .lang-top{
+      display:flex;gap:8px;padding:6px;border-radius: 14px;
+      background: rgba(255,255,255,0.62);
+      border: 1px solid rgba(109,94,252,0.14);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow2);
+      align-items:center;
+    }
+    .lang-btn{
+      width:34px;height:34px;border-radius: 12px;
+      border: 1px solid rgba(109,94,252,0.14);
+      background: rgba(255,255,255,0.90);
+      cursor:pointer;
+      display:grid;place-items:center;padding:0;
+      transition: transform .18s ease, filter .18s ease;
+      overflow:hidden;
+    }
+    .lang-btn:hover{transform: translateY(-2px); filter:brightness(1.03);}
+    .lang-btn.active{
+      background: linear-gradient(180deg, var(--violet2), var(--violet));
+      border-color: rgba(109,94,252,0.18);
+    }
+    .flag{
+      width:18px;height:18px;border-radius: 5px;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.10);
+      border:1px solid rgba(0,0,0,0.10);
+      display:block;
+      background-size: cover;
+      background-position:center;
+      background-repeat:no-repeat;
+    }
+    .flag-om{
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' ry='8' fill='%23fff'/%3E%3Crect x='0' y='0' width='18' height='64' fill='%23d81f26'/%3E%3Crect x='18' y='0' width='46' height='21.33' fill='%23ffffff'/%3E%3Crect x='18' y='21.33' width='46' height='21.33' fill='%23d81f26'/%3E%3Crect x='18' y='42.66' width='46' height='21.34' fill='%23008043'/%3E%3C/svg%3E");
+    }
+    .flag-gb{
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' ry='8' fill='%23012169'/%3E%3Cpath d='M0 8 L8 0 H18 L0 18 Z' fill='%23fff' opacity='0.95'/%3E%3Cpath d='M64 8 L56 0 H46 L64 18 Z' fill='%23fff' opacity='0.95'/%3E%3Cpath d='M0 56 L8 64 H18 L0 46 Z' fill='%23fff' opacity='0.95'/%3E%3Cpath d='M64 56 L56 64 H46 L64 46 Z' fill='%23fff' opacity='0.95'/%3E%3Crect x='0' y='27' width='64' height='10' fill='%23fff'/%3E%3Crect x='27' y='0' width='10' height='64' fill='%23fff'/%3E%3Crect x='0' y='29' width='64' height='6' fill='%23c8102e'/%3E%3Crect x='29' y='0' width='6' height='64' fill='%23c8102e'/%3E%3C/svg%3E");
+    }
+
+    /* Content cards */
+    .grid{
+      display:grid;
+      grid-template-columns: 1.25fr 0.75fr;
+      gap:16px;
+      align-items:start;
+    }
+
+    .card{
+      border-radius: var(--r);
+      background: rgba(255,255,255,0.82);
+      border:1px solid rgba(109,94,252,0.12);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .panel{padding:16px}
+    .panel h3{margin:0;font-size:15px;font-weight:900}
+    .sub{margin:6px 0 0;color:var(--muted);font-size:12px;font-weight:700}
+
+    /* Filters row */
+    .filters{
+      margin-top:12px;
+      display:grid;
+      grid-template-columns: 1fr 180px 180px 160px;
+      gap:10px;
+      align-items:center;
+    }
+    .fbox{
+      padding:12px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.86);
+      border:1px solid rgba(109,94,252,0.12);
+      box-shadow: var(--shadow2);
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+    .fbox input,.fbox select{
+      width:100%;
+      border:none;
+      outline:none;
+      background:transparent;
+      font-weight:800;
+      color:var(--text);
+      font-family: inherit;
+    }
+    .fbtn{
+      padding:12px 14px;
+      border-radius: 18px;
+      border:none;
+      cursor:pointer;
+      font-weight:900;
+      background: linear-gradient(180deg, var(--violet2), var(--violet));
+      color:#fff;
+      box-shadow: 0 18px 35px rgba(109,94,252,0.18);
+      transition: transform .18s ease, filter .18s ease;
+    }
+    .fbtn:hover{transform: translateY(-2px); filter:brightness(1.05);}
+
+    /* Requests list */
+    .list{margin-top:14px; display:flex; flex-direction:column; gap:10px;}
+    .item{
+      padding:14px;
+      border-radius: 18px;
+      background: rgba(109,94,252,0.06);
+      border:1px solid rgba(109,94,252,0.10);
+      display:grid;
+      grid-template-columns: 1.3fr 0.7fr;
+      gap:12px;
+      transition: transform .18s ease;
+    }
+    .item:hover{transform: translateY(-2px);}
+    .it-top{
+      display:flex;gap:10px;align-items:flex-start;
+      min-width:0;
+    }
+    .badge-ic{
+      width:44px;height:44px;border-radius:18px;
+      display:grid;place-items:center;
+      font-weight:900;
+      background: rgba(109,94,252,0.10);
+      border:1px solid rgba(109,94,252,0.14);
+      flex:0 0 auto;
+    }
+    .it-meta{min-width:0;}
+    .it-meta h4{
+      margin:0;
+      font-size:14px;
+      font-weight:900;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .it-meta p{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:12px;
+      font-weight:800;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+    }
+    .dot{width:6px;height:6px;border-radius:50%;background: rgba(109,94,252,0.35);display:inline-block;}
+
+    .it-actions{
+      display:flex;
+      gap:10px;
+      justify-content:flex-end;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .chip{
+      padding:7px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:900;
+      background: rgba(255,255,255,0.90);
+      border:1px solid rgba(109,94,252,0.14);
+      color:#2b236a;
+      white-space:nowrap;
+    }
+    .chip.pending{border-color: rgba(255,179,71,0.25); background: rgba(255,179,71,0.14); color:#7a4a00;}
+    .chip.approved{border-color: rgba(38,194,129,0.25); background: rgba(38,194,129,0.14); color:#0f5e3d;}
+    .chip.completed{border-color: rgba(109,94,252,0.22); background: rgba(109,94,252,0.12); color:#2b236a;}
+    .chip.rejected{border-color: rgba(255,59,59,0.22); background: rgba(255,59,59,0.12); color:#9a0b0b;}
+
+    .btn{
+      padding:10px 12px;
+      border-radius: 14px;
+      border:none;
+      cursor:pointer;
+      font-weight:900;
+      font-family: inherit;
+      background: rgba(255,255,255,0.92);
+      border:1px solid rgba(109,94,252,0.14);
+      transition: transform .18s ease, filter .18s ease;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      text-decoration:none;
+      color:var(--text);
+      white-space:nowrap;
+    }
+    .btn:hover{transform: translateY(-2px); filter:brightness(1.03);}
+    .btn-red{
+      background: rgba(255,59,59,0.10);
+      border-color: rgba(255,59,59,0.20);
+      color:#b10a0a;
+    }
+
+    /* Right summary card */
+    .kvs{margin-top:12px; display:grid; gap:10px;}
+    .kv{
+      padding:10px 12px;
+      border-radius: 18px;
+      background: rgba(109,94,252,0.06);
+      border:1px solid rgba(109,94,252,0.10);
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .kv span{font-size:12px;color:var(--muted);font-weight:900}
+    .kv b{font-size:12.5px}
+
+    .progress{
+      margin-top:12px;
+      padding:12px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.86);
+      border:1px solid rgba(109,94,252,0.12);
+      box-shadow: var(--shadow2);
+    }
+    .bar{
+      height:10px;border-radius:999px;
+      background: rgba(109,94,252,0.10);
+      overflow:hidden;
+      border:1px solid rgba(109,94,252,0.12);
+      margin-top:10px;
+    }
+    .fill{
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, var(--mint), var(--violet));
+      border-radius:999px;
+      transition: width .8s ease;
+    }
+
+    /* Pagination */
+    .pager{
+      margin-top:14px;
+      display:flex;
+      gap:10px;
+      justify-content:space-between;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .pagebtn{
+      padding:10px 12px;
+      border-radius: 14px;
+      border:1px solid rgba(109,94,252,0.14);
+      background: rgba(255,255,255,0.92);
+      box-shadow: var(--shadow2);
+      text-decoration:none;
+      color:var(--text);
+      font-weight:900;
+    }
+    .pagebtn:hover{filter:brightness(1.03);}
+    .pmeta{
+      color:var(--muted);
+      font-weight:900;
+      font-size:12px;
+    }
+
+    /* Empty */
+    .empty{
+      padding:16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.86);
+      border:1px dashed rgba(109,94,252,0.22);
+      box-shadow: var(--shadow2);
+      margin-top:14px;
+    }
+    .empty b{font-weight:900}
+    .empty p{margin:6px 0 0; color:var(--muted); font-weight:800; font-size:12px}
+
+    @media (max-width: 1100px){
+      .sidebar{position:relative;height:auto;}
+      .page{grid-template-columns: 1fr;}
+      .grid{grid-template-columns: 1fr;}
+      .filters{grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="page">
+
+    <aside class="sidebar">
+      <a class="brand" href="{{ url_for('home') }}">
+        <img class="logo-img" src="{{ url_for('static', filename='img/fsdp_logo.png') }}" alt="FSDP Logo">
+        <div>
+          <h3 data-en="FSDP Beneficiary" data-ar="مستفيد FSDP">FSDP Beneficiary</h3>
+          <p data-en="Community support dashboard" data-ar="لوحة دعم المجتمع">Community support dashboard</p>
+        </div>
+      </a>
+
+      <div class="profile-mini">
+        <div class="avatar">
+          {{ (user.full_name[:1] if user and user.full_name else "B") }}
+        </div>
+        <div class="meta">
+          <p class="name">{{ user.full_name }}</p>
+          <p class="cat">
+            <span data-en="Category" data-ar="الفئة">Category</span>:
+            <span>{{ user.category }}</span>
+          </p>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a href="{{ url_for('beneficiary_dashboard') }}">
+          <div class="ic">🏠</div>
+          <span data-en="Dashboard" data-ar="الرئيسية">Dashboard</span>
+        </a>
+        <a href="{{ url_for('beneficiary_available_donations') }}">
+          <div class="ic">🎁</div>
+          <span data-en="Available Donations" data-ar="التبرعات المتاحة">Available Donations</span>
+        </a>
+        <a class="active" href="{{ url_for('beneficiary_requests') }}">
+          <div class="ic">📌</div>
+          <span data-en="My Requests" data-ar="طلباتي">My Requests</span>
+        </a>
+        <a href="{{ url_for('edit_beneficiary_profile') }}">
+          <div class="ic">⚙️</div>
+          <span data-en="Profile / Settings" data-ar="الملف الشخصي / الإعدادات">Profile / Settings</span>
+        </a>
+      </nav>
+
+      <div class="logout">
+        <a href="{{ url_for('logout') }}">
+          <span data-en="Logout" data-ar="تسجيل خروج">Logout</span>
+        </a>
+      </div>
+    </aside>
+
+    <main class="main">
+
+      <div class="topbar">
+        <div class="title">
+          <h1 data-en="My Requests" data-ar="طلباتي">My Requests</h1>
+          <p data-en="Search, filter, and track all your donation requests"
+             data-ar="ابحث وفلتر وتابع جميع طلبات التبرع">
+            Search, filter, and track all your donation requests
+          </p>
+        </div>
+
+        <div class="right">
+          <div class="pill"><b>{{ user.email }}</b></div>
+
+          <div class="lang-top" aria-label="Language switch">
+            <button type="button" id="btn-ar" class="lang-btn" aria-label="Arabic" title="Arabic">
+              <span class="flag flag-om"></span>
+            </button>
+            <button type="button" id="btn-en" class="lang-btn" aria-label="English" title="English">
+              <span class="flag flag-gb"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <section class="grid">
+
+        <!-- LEFT: List -->
+        <div class="card">
+          <div class="panel">
+            <h3 data-en="Requests List" data-ar="قائمة الطلبات">Requests List</h3>
+            <p class="sub" data-en="Use filters to quickly find your requests"
+               data-ar="استخدم الفلاتر عشان تحصل طلباتك بسرعة">
+              Use filters to quickly find your requests
+            </p>
+
+            <!-- Filters form -->
+            <form class="filters" method="get" action="{{ url_for('beneficiary_requests') }}">
+              <div class="fbox">
+                <span>🔎</span>
+                <input
+                  type="text"
+                  name="q"
+                  id="q"
+                  value="{{ q or '' }}"
+                  placeholder="Search by donation title..."
+                  data-en-placeholder="Search by donation title..."
+                  data-ar-placeholder="ابحث بعنوان التبرع..."
+                />
+              </div>
+
+              <div class="fbox">
+                <span>🏷️</span>
+                <select name="status" id="status">
+                  <option value="" {% if not status %}selected{% endif %} data-en="All status" data-ar="كل الحالات">All status</option>
+                  <option value="Pending" {% if status=='Pending' %}selected{% endif %} data-en="Pending" data-ar="قيد الانتظار">Pending</option>
+                  <option value="Approved" {% if status=='Approved' %}selected{% endif %} data-en="Approved" data-ar="معتمد">Approved</option>
+                  <option value="Completed" {% if status=='Completed' %}selected{% endif %} data-en="Completed" data-ar="مكتمل">Completed</option>
+                  <option value="Rejected" {% if status=='Rejected' %}selected{% endif %} data-en="Rejected" data-ar="مرفوض">Rejected</option>
+                </select>
+              </div>
+
+              <div class="fbox">
+                <span>↕️</span>
+                <select name="sort" id="sort">
+                  <option value="new" {% if sort=='new' or not sort %}selected{% endif %} data-en="Newest first" data-ar="الأحدث أولاً">Newest first</option>
+                  <option value="old" {% if sort=='old' %}selected{% endif %} data-en="Oldest first" data-ar="الأقدم أولاً">Oldest first</option>
+                </select>
+              </div>
+
+              <button class="fbtn" type="submit" data-en="Apply" data-ar="تطبيق">Apply</button>
+            </form>
+
+            {% if requests and requests|length > 0 %}
+              <div class="list">
+
+                {% for r in requests %}
+                  {% set st = (r.status or "Pending") %}
+                  {% set stl = st|lower %}
+                  {% set chip = "pending" %}
+                  {% set icon = "📌" %}
+                  {% if stl == "approved" %}{% set chip="approved" %}{% set icon="✅" %}{% endif %}
+                  {% if stl == "completed" %}{% set chip="completed" %}{% set icon="🏁" %}{% endif %}
+                  {% if stl == "rejected" %}{% set chip="rejected" %}{% set icon="⛔" %}{% endif %}
+
+                  <div class="item">
+                    <div class="it-top">
+                      <div class="badge-ic">{{ icon }}</div>
+                      <div class="it-meta">
+                        <h4 title="{{ r.donation_title }}">{{ r.donation_title }}</h4>
+                        <p>
+                          <span data-en="Request ID" data-ar="رقم الطلب">Request ID</span>: <b>#{{ r.id }}</b>
+                          <span class="dot"></span>
+                          <span data-en="Date" data-ar="التاريخ">Date</span>: <b>{{ r.created_at.strftime('%Y-%m-%d') if r.created_at else '-' }}</b>
+                          <span class="dot"></span>
+                          <span data-en="Qty" data-ar="الكمية">Qty</span>: <b>{{ r.quantity_requested if r.quantity_requested is not none else '-' }}</b>
+                        </p>
+                      </div>
+                    </div>
+
+                    <div class="it-actions">
+                      <div class="chip {{ chip }}">{{ st }}</div>
+
+                      <!-- Details button (modal) -->
+                      <button class="btn" type="button"
+                        onclick="openModal(
+                          '{{ r.id }}',
+                          `{{ (r.donation_title or '')|e }}`,
+                          `{{ (r.status or 'Pending')|e }}`,
+                          `{{ (r.created_at.strftime('%Y-%m-%d %H:%M') if r.created_at else '-')|e }}`,
+                          `{{ (r.quantity_requested|string)|e }}`,
+                          `{{ (r.note or '')|e }}`
+                        )">
+                        ℹ️ <span data-en="Details" data-ar="تفاصيل">Details</span>
+                      </button>
+
+                      {% if stl == "pending" %}
+                        <form method="post" action="{{ url_for('cancel_request', request_id=r.id) }}" style="margin:0;">
+                          <button class="btn btn-red" type="submit">
+                            🗑️ <span data-en="Cancel" data-ar="إلغاء">Cancel</span>
+                          </button>
+                        </form>
+                      {% endif %}
+                    </div>
+                  </div>
+                {% endfor %}
+
+              </div>
+
+              <!-- Pagination -->
+              <div class="pager">
+                <div class="pmeta">
+                  <span data-en="Page" data-ar="صفحة">Page</span> <b>{{ page }}</b>
+                  <span data-en="of" data-ar="من">of</span> <b>{{ pages }}</b>
+                </div>
+
+                <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+                  {% if page > 1 %}
+                    <a class="pagebtn" href="{{ url_for('beneficiary_requests', page=page-1, q=q, status=status, sort=sort) }}">
+                      ← <span data-en="Prev" data-ar="السابق">Prev</span>
+                    </a>
+                  {% endif %}
+
+                  {% if page < pages %}
+                    <a class="pagebtn" href="{{ url_for('beneficiary_requests', page=page+1, q=q, status=status, sort=sort) }}">
+                      <span data-en="Next" data-ar="التالي">Next</span> →
+                    </a>
+                  {% endif %}
+                </div>
+              </div>
+
+            {% else %}
+              <div class="empty">
+                <b data-en="No requests found" data-ar="لا توجد طلبات">No requests found</b>
+                <p data-en="Try changing filters or browse available donations to make a request."
+                   data-ar="جرّب تغيّر الفلاتر أو تصفح التبرعات المتاحة لتقديم طلب.">
+                  Try changing filters or browse available donations to make a request.
+                </p>
+                <div style="margin-top:12px;">
+                  <a class="btn" href="{{ url_for('beneficiary_available_donations') }}">
+                    🎁 <span data-en="Browse Donations" data-ar="تصفح التبرعات">Browse Donations</span>
+                  </a>
+                </div>
+              </div>
+            {% endif %}
+
+          </div>
+        </div>
+
+        <!-- RIGHT: Summary -->
+        <aside class="card">
+          <div class="panel">
+            <h3 data-en="Request Summary" data-ar="ملخص الطلبات">Request Summary</h3>
+            <p class="sub" data-en="Quick overview of your statuses"
+               data-ar="نظرة سريعة على حالات طلباتك">
+              Quick overview of your statuses
+            </p>
+
+            <div class="kvs">
+              <div class="kv"><span data-en="Total" data-ar="الإجمالي">Total</span><b>{{ summary.total }}</b></div>
+              <div class="kv"><span data-en="Pending" data-ar="قيد الانتظار">Pending</span><b>{{ summary.pending }}</b></div>
+              <div class="kv"><span data-en="Approved" data-ar="معتمد">Approved</span><b>{{ summary.approved }}</b></div>
+              <div class="kv"><span data-en="Completed" data-ar="مكتمل">Completed</span><b>{{ summary.completed }}</b></div>
+              <div class="kv"><span data-en="Rejected" data-ar="مرفوض">Rejected</span><b>{{ summary.rejected }}</b></div>
+            </div>
+
+            <div class="progress">
+              <b data-en="Completion rate" data-ar="نسبة الاكتمال">Completion rate</b>
+              <div class="sub" style="margin-top:6px;">
+                <span data-en="Completed / Total" data-ar="المكتمل / الإجمالي">Completed / Total</span>:
+                <b>{{ summary.completed }}</b> / <b>{{ summary.total }}</b>
+              </div>
+              <div class="bar"><div id="fill" class="fill"></div></div>
+            </div>
+
+            <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+              <a class="btn" href="{{ url_for('beneficiary_available_donations') }}">
+                🎁 <span data-en="Browse" data-ar="تصفح">Browse</span>
+              </a>
+              <a class="btn" href="{{ url_for('beneficiary_dashboard') }}">
+                🏠 <span data-en="Dashboard" data-ar="الرئيسية">Dashboard</span>
+              </a>
+            </div>
+          </div>
+        </aside>
+
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Details Modal -->
+  <div id="modal" style="position:fixed; inset:0; background: rgba(0,0,0,0.25); display:none; align-items:center; justify-content:center; padding:18px; z-index:999999;">
+    <div style="max-width:560px; width:100%; background: rgba(255,255,255,0.92); border:1px solid rgba(109,94,252,0.14); box-shadow: var(--shadow); border-radius: 22px; overflow:hidden;">
+      <div style="padding:14px 16px; display:flex; justify-content:space-between; align-items:center; background: rgba(109,94,252,0.08); border-bottom:1px solid rgba(109,94,252,0.12);">
+        <b id="mTitle" style="font-weight:900;">Request Details</b>
+        <button type="button" onclick="closeModal()" style="border:none; background:transparent; font-size:18px; cursor:pointer; font-weight:900;">✕</button>
+      </div>
+      <div style="padding:16px;">
+        <div style="display:grid; gap:10px;">
+          <div class="kv"><span>ID</span><b id="mId">-</b></div>
+          <div class="kv"><span>Status</span><b id="mStatus">-</b></div>
+          <div class="kv"><span>Date</span><b id="mDate">-</b></div>
+          <div class="kv"><span>Quantity</span><b id="mQty">-</b></div>
+          <div class="kv" style="align-items:flex-start;">
+            <span>Note</span>
+            <b id="mNote" style="max-width:360px; text-align:end; word-break:break-word;">-</b>
+          </div>
+        </div>
+        <div style="margin-top:12px; display:flex; justify-content:flex-end;">
+          <button class="btn" type="button" onclick="closeModal()">✅ <span data-en="Close" data-ar="إغلاق">Close</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ✅ Language Switch (EN/AR) + placeholders
+    const els = document.querySelectorAll("[data-en]");
+    const btnEN = document.getElementById("btn-en");
+    const btnAR = document.getElementById("btn-ar");
+
+    const qInput = document.getElementById("q");
+    function setLang(lang){
+      els.forEach(el => el.textContent = el.dataset[lang]);
+      document.documentElement.lang = (lang === "ar") ? "ar" : "en";
+      document.body.dir = (lang === "ar") ? "rtl" : "ltr";
+
+      if(qInput){
+        qInput.placeholder = (lang === "ar")
+          ? (qInput.getAttribute("data-ar-placeholder") || "ابحث...")
+          : (qInput.getAttribute("data-en-placeholder") || "Search...");
+      }
+
+      localStorage.setItem("fsdp_lang", lang);
+      btnEN?.classList.toggle("active", lang === "en");
+      btnAR?.classList.toggle("active", lang === "ar");
+    }
+
+    btnEN?.addEventListener("click", () => setLang("en"));
+    btnAR?.addEventListener("click", () => setLang("ar"));
+    setLang(localStorage.getItem("fsdp_lang") || "en");
+
+    // Progress fill
+    const total = Number("{{ summary.total }}") || 0;
+    const completed = Number("{{ summary.completed }}") || 0;
+    const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+    const fill = document.getElementById("fill");
+    setTimeout(()=>{ if(fill) fill.style.width = percent + "%"; }, 120);
+
+    // Modal
+    const modal = document.getElementById("modal");
+    function openModal(id, title, status, date, qty, note){
+      document.getElementById("mTitle").textContent = title || "Request Details";
+      document.getElementById("mId").textContent = "#" + id;
+      document.getElementById("mStatus").textContent = status || "-";
+      document.getElementById("mDate").textContent = date || "-";
+      document.getElementById("mQty").textContent = qty || "-";
+      document.getElementById("mNote").textContent = note || "-";
+      modal.style.display = "flex";
+    }
+    function closeModal(){ modal.style.display = "none"; }
+
+    modal.addEventListener("click", (e)=>{
+      if(e.target === modal) closeModal();
+    });
+  </script>
+</body>
+</html>
