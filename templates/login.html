@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    *{ box-sizing: border-box; }
+    body{
+      margin:0;
+      font-family:'Poppins', sans-serif;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      background:#eaf7ef;
+    }
+
+    .bg{
+      position:fixed;
+      inset:0;
+      background:
+        linear-gradient(
+          to bottom,
+          rgba(255,255,255,0.15) 0%,
+          rgba(255,255,255,0.45) 45%,
+          rgba(255,255,255,0.75) 100%
+        ),
+        url("{{ url_for('static', filename='img/login_donation_bg.png') }}");
+      background-size:cover;
+      background-position:center top;
+      z-index:-3;
+    }
+    .bg::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      backdrop-filter: blur(2px);
+      background: rgba(255,255,255,0.08);
+    }
+
+    .card{
+      width: min(520px, 92vw);
+      background: rgba(255,255,255,0.92);
+      border-radius: 26px;
+      padding: 34px 30px 26px;
+      box-shadow: 0 24px 70px rgba(0,0,0,0.18);
+      text-align:center;
+    }
+
+    h1{
+      margin:0;
+      font-size: 34px;
+      font-weight: 800;
+      color:#2e7d32;
+    }
+
+    .sub{
+      margin: 8px 0 24px;
+      font-size: 16px;
+      color:#6b7280;
+      font-weight: 500;
+    }
+
+    .field{
+      width:100%;
+      margin: 14px 0;
+      position:relative;
+    }
+
+    .input{
+      width:100%;
+      border: 1.5px solid rgba(0,0,0,0.08);
+      background: rgba(255,255,255,0.85);
+      border-radius: 16px;
+      padding: 16px 16px 16px 16px;
+      font-size: 16px;
+      outline:none;
+    }
+
+    .input:focus{
+      border-color: rgba(46,125,50,0.55);
+      box-shadow: 0 0 0 4px rgba(46,125,50,0.14);
+    }
+
+    .btn{
+      width:100%;
+      margin-top: 18px;
+      padding: 16px;
+      border:0;
+      border-radius: 18px;
+      background: linear-gradient(180deg, #2f8a3a, #2e7d32);
+      color:#fff;
+      font-weight: 800;
+      font-size: 20px;
+      cursor:pointer;
+      box-shadow: 0 12px 26px rgba(46,125,50,0.30);
+    }
+
+    .bottom{
+      margin-top: 18px;
+      font-size: 15px;
+      color:#6b7280;
+    }
+
+    .bottom a{
+      color:#2e7d32;
+      font-weight: 800;
+      text-decoration: underline;
+    }
+
+    .error{
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 14px;
+      background: rgba(255,0,0,0.07);
+      border: 1px solid rgba(255,0,0,0.18);
+      color:#b10000;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    /* ✅ Trick: hide autofill trap fields */
+    .autofill-trap{
+      position:absolute !important;
+      left:-9999px !important;
+      top:-9999px !important;
+      width:1px !important;
+      height:1px !important;
+      opacity:0 !important;
+      pointer-events:none !important;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="bg"></div>
+
+  <div class="card">
+    <h1>Welcome Back</h1>
+    <div class="sub">Log in to access your dashboard</div>
+
+    <!-- ✅ Important: autocomplete="off" + autofill trap -->
+    <form method="POST" autocomplete="off">
+
+      <!-- ✅ Autofill trap fields (Chrome sometimes fills these instead of real fields) -->
+      <input class="autofill-trap" type="text" name="fake_username" autocomplete="username">
+      <input class="autofill-trap" type="password" name="fake_password" autocomplete="current-password">
+
+      <div class="field">
+        <input class="input"
+               type="email"
+               name="email"
+               placeholder="Email Address"
+               autocomplete="username"
+               spellcheck="false"
+               autocapitalize="off"
+               required>
+      </div>
+
+      <div class="field">
+        <input class="input"
+               type="password"
+               name="password"
+               placeholder="Password"
+               autocomplete="current-password"
+               required>
+      </div>
+
+      <button class="btn" type="submit">Sign In</button>
+
+      {% if error %}
+        <div class="error">{{ error }}</div>
+      {% endif %}
+    </form>
+
+    <div class="bottom">
+      No account?
+      <a href="{{ register_link }}">Register here</a>
+    </div>
+  </div>
+</body>
+</html>

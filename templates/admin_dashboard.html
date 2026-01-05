@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Owner Dashboard</title>
+<style>
+body { margin:0; font-family:Arial; background:#f4f6f8; }
+header {
+    background:#1b5e20;
+    color:white;
+    padding:18px 30px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+a { text-decoration:none; }
+.btn {
+    padding:10px 16px;
+    border-radius:8px;
+    font-weight:600;
+    color:white;
+}
+.red { background:#c62828; }
+.green { background:#2e7d32; }
+.blue { background:#1565c0; }
+
+.container { padding:30px; }
+
+.cards {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+}
+.card {
+    background:white;
+    padding:20px;
+    border-radius:14px;
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+}
+.card h3 { margin:0; color:#555; }
+.card p { font-size:28px; font-weight:bold; color:#1b5e20; }
+
+.actions { margin-top:30px; display:flex; gap:12px; }
+</style>
+</head>
+
+<body>
+
+<header>
+    <h2>Owner Dashboard</h2>
+    <a href="{{ url_for('owner_logout') }}" class="btn red">Logout</a>
+</header>
+
+<div class="container">
+
+<div class="cards">
+    <div class="card"><h3>Total Providers</h3><p>{{ stats.total_providers }}</p></div>
+    <div class="card"><h3>Total Beneficiaries</h3><p>{{ stats.total_beneficiaries }}</p></div>
+    <div class="card"><h3>Total Donations</h3><p>{{ stats.total_donations }}</p></div>
+    <div class="card"><h3>Total Requests</h3><p>{{ stats.total_requests }}</p></div>
+    <div class="card"><h3>Pending Providers</h3><p>{{ stats.pending_providers }}</p></div>
+    <div class="card"><h3>Pending Donations</h3><p>{{ stats.pending_donations }}</p></div>
+</div>
+
+<div class="actions">
+    <a href="{{ url_for('owner_providers') }}" class="btn blue">Manage Providers</a>
+    <a href="{{ url_for('owner_donations') }}" class="btn green">Manage Donations</a>
+</div>
+
+</div>
+</body>
+</html>
