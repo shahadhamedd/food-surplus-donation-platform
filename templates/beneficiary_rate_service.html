@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rate the Service</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#f7f7ff;
+      --text:#171826;
+      --muted:#6a6f86;
+
+      --violet:#6d5efc;
+      --violet2:#9b7bff;
+
+      --mint:#26c281;
+      --red:#ff3b3b;
+
+      --card:rgba(255,255,255,0.86);
+      --stroke:rgba(109,94,252,0.14);
+      --shadow:0 18px 45px rgba(31, 25, 80, 0.12);
+      --shadow2:0 10px 28px rgba(31, 25, 80, 0.08);
+
+      --r:22px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Poppins, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(900px 520px at 10% 10%, rgba(109,94,252,0.16), transparent 60%),
+        radial-gradient(900px 520px at 85% 20%, rgba(38,194,129,0.12), transparent 60%),
+        radial-gradient(900px 520px at 55% 90%, rgba(255,179,71,0.12), transparent 60%),
+        var(--bg);
+      min-height:100vh;
+      overflow-x:hidden;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+
+    /* RTL */
+    body[dir="rtl"]{direction:rtl;font-family:Tahoma, Arial, sans-serif;}
+    body[dir="rtl"] .wrap{direction:rtl;}
+    body[dir="rtl"] .back a{justify-content:flex-end;}
+    body[dir="rtl"] textarea{text-align:right;}
+
+    .wrap{
+      width:min(980px, 100%);
+      display:flex;
+      justify-content:center;
+    }
+
+    .card{
+      width:min(860px, 100%);
+      border-radius: var(--r);
+      background: rgba(255,255,255,0.86);
+      border:1px solid rgba(109,94,252,0.12);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      padding:24px;
+    }
+
+    .title{
+      margin:0;
+      font-size:26px;
+      font-weight:900;
+      letter-spacing: -0.2px;
+    }
+
+    .meta{
+      margin-top:6px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+      color:var(--muted);
+      font-weight:800;
+      font-size:13px;
+    }
+    .dot{
+      width:6px;height:6px;border-radius:50%;
+      background: rgba(109,94,252,0.35);
+      display:inline-block;
+    }
+
+    .section{ margin-top:20px; }
+    .section h3{
+      margin:0 0 10px;
+      font-size:14px;
+      font-weight:900;
+    }
+
+    /* Stars */
+    .stars{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      user-select:none;
+    }
+    .star{
+      font-size:34px;
+      cursor:pointer;
+      line-height:1;
+      transform: translateY(1px);
+      transition: transform .15s ease, filter .15s ease, opacity .15s ease;
+      opacity:0.35;
+      color:#b9b9c9;
+    }
+    .star:hover{transform: translateY(-2px); filter:brightness(1.03);}
+    .star.on{opacity:1; color:#ffb347;}
+
+    .hint{
+      margin-top:8px;
+      font-size:12px;
+      color:var(--muted);
+      font-weight:800;
+    }
+
+    textarea{
+      width:100%;
+      min-height:140px;
+      resize:vertical;
+      padding:14px 14px;
+      border-radius: 16px;
+      border:1px solid rgba(109,94,252,0.35);
+      outline:none;
+      background: rgba(255,255,255,0.92);
+      box-shadow: var(--shadow2);
+      font-family: inherit;
+      font-weight:700;
+      color:var(--text);
+    }
+    textarea:focus{
+      border-color: rgba(109,94,252,0.65);
+      box-shadow: 0 0 0 4px rgba(109,94,252,0.12), var(--shadow2);
+    }
+
+    .btnrow{ margin-top:16px; display:flex; }
+    .submit{
+      width:100%;
+      padding:14px 16px;
+      border-radius: 16px;
+      border:none;
+      cursor:pointer;
+      font-weight:900;
+      font-family: inherit;
+      background: linear-gradient(180deg, var(--violet2), var(--violet));
+      color:#fff;
+      box-shadow: 0 18px 35px rgba(109,94,252,0.18);
+      transition: transform .18s ease, filter .18s ease;
+    }
+    .submit:hover{transform: translateY(-2px); filter:brightness(1.05);}
+
+    .back{ margin-top:14px; }
+    .back a{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      text-decoration:none;
+      font-weight:900;
+      color: var(--violet);
+    }
+
+    .error{
+      margin-top:12px;
+      padding:12px 14px;
+      border-radius: 16px;
+      background: rgba(255,59,59,0.10);
+      border:1px solid rgba(255,59,59,0.20);
+      color:#b10a0a;
+      font-weight:900;
+      font-size:13px;
+    }
+
+    .lang-top{
+      margin-left:auto;
+      display:flex;
+      gap:8px;
+      padding:6px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.62);
+      border: 1px solid rgba(109,94,252,0.14);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow2);
+      align-items:center;
+    }
+    .lang-btn{
+      width:34px;height:34px;border-radius: 12px;
+      border: 1px solid rgba(109,94,252,0.14);
+      background: rgba(255,255,255,0.90);
+      cursor:pointer;
+      display:grid;place-items:center;padding:0;
+      transition: transform .18s ease, filter .18s ease;
+      overflow:hidden;
+    }
+    .lang-btn:hover{transform: translateY(-2px); filter:brightness(1.03);}
+    .lang-btn.active{
+      background: linear-gradient(180deg, var(--violet2), var(--violet));
+      border-color: rgba(109,94,252,0.18);
+    }
+    .flag{
+      width:18px;height:18px;border-radius: 5px;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.10);
+      border:1px solid rgba(0,0,0,0.10);
+      display:block;
+      background-size: cover;
+      background-position:center;
+      background-repeat:no-repeat;
+    }
+    .flag-om{
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' ry='8' fill='%23fff'/%3E%3Crect x='0' y='0' width='18' height='64' fill='%23d81f26'/%3E%3Crect x='18' y='0' width='46' height='21.33' fill='%23ffffff'/%3E%3Crect x='18' y='21.33' width='46' height='21.33' fill='%23d81f26'/%3E%3Crect x='18' y='42.66' width='46' height='21.34' fill='%23008043'/%3E%3C/svg%3E");
+    }
+    .flag-gb{
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' ry='8' fill='%23012169'/%3E%3Cpath d='M0 8 L8 0 H18 L0 18 Z' fill='%23fff' opacity='0.95'/%3E%3Cpath d='M64 8 L56 0 H46 L64 18 Z' fill='%23fff' opacity='0.95'/%3E%3Cpath d='M0 56 L8 64 H18 L0 46 Z' fill='%23fff' opacity='0.95'/%3E%3Cpath d='M64 56 L56 64 H46 L64 46 Z' fill='%23fff' opacity='0.95'/%3E%3Crect x='0' y='27' width='64' height='10' fill='%23fff'/%3E%3Crect x='27' y='0' width='10' height='64' fill='%23fff'/%3E%3Crect x='0' y='29' width='64' height='6' fill='%23c8102e'/%3E%3Crect x='29' y='0' width='6' height='64' fill='%23c8102e'/%3E%3C/svg%3E");
+    }
+
+    .toprow{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+
+    @media (max-width: 520px){
+      .card{padding:18px;}
+      .title{font-size:22px;}
+      .star{font-size:30px;}
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="wrap">
+    <div class="card">
+
+      <div class="toprow">
+        <div>
+          <h1 class="title" data-en="Rate the Service" data-ar="قيّم الخدمة">Rate the Service</h1>
+          <div class="meta">
+            <span data-en="Request ID" data-ar="رقم الطلب">Request ID</span>: <b>#{{ req.id }}</b>
+            <span class="dot"></span>
+            <span data-en="Status" data-ar="الحالة">Status</span>: <b>{{ req.status }}</b>
+          </div>
+        </div>
+
+        <div class="lang-top" aria-label="Language switch">
+          <button type="button" id="btn-ar" class="lang-btn" aria-label="Arabic" title="Arabic">
+            <span class="flag flag-om"></span>
+          </button>
+          <button type="button" id="btn-en" class="lang-btn" aria-label="English" title="English">
+            <span class="flag flag-gb"></span>
+          </button>
+        </div>
+      </div>
+
+      {% if error %}
+        <div class="error">{{ error }}</div>
+      {% endif %}
+
+      <form method="POST" action="{{ url_for('beneficiary_rate_service', request_id=req.id) }}" id="rateForm">
+        <input type="hidden" name="stars" id="starsInput" value="">
+
+        <div class="section">
+          <h3 data-en="Stars" data-ar="النجوم">Stars</h3>
+
+          <div class="stars" aria-label="Star rating">
+            <span class="star" data-val="5" title="5 stars">★</span>
+            <span class="star" data-val="4" title="4 stars">★</span>
+            <span class="star" data-val="3" title="3 stars">★</span>
+            <span class="star" data-val="2" title="2 stars">★</span>
+            <span class="star" data-val="1" title="1 star">★</span>
+          </div>
+
+          <div class="hint" id="hint" data-en="Click a star to choose (required)" data-ar="اضغط على نجمة للاختيار (إجباري)">
+            Click a star to choose (required)
+          </div>
+        </div>
+
+        <div class="section">
+          <h3 data-en="Written Feedback (optional)" data-ar="ملاحظات كتابية (اختياري)">Written Feedback (optional)</h3>
+          <textarea name="comment" placeholder="Write your feedback..."
+                    data-en-placeholder="Write your feedback..."
+                    data-ar-placeholder="اكتب ملاحظاتك..."></textarea>
+        </div>
+
+        <div class="btnrow">
+          <button class="submit" type="submit" data-en="Submit" data-ar="إرسال">Submit</button>
+        </div>
+      </form>
+
+      <div class="back">
+        <a href="{{ url_for('beneficiary_requests') }}">
+          ← <span data-en="Back to My Requests" data-ar="العودة إلى طلباتي">Back to My Requests</span>
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Language Switch + placeholders
+    const els = document.querySelectorAll("[data-en]");
+    const btnEN = document.getElementById("btn-en");
+    const btnAR = document.getElementById("btn-ar");
+    const textarea = document.querySelector("textarea[name='comment']");
+
+    function setLang(lang){
+      els.forEach(el => el.textContent = el.dataset[lang]);
+      document.documentElement.lang = (lang === "ar") ? "ar" : "en";
+      document.body.dir = (lang === "ar") ? "rtl" : "ltr";
+
+      if(textarea){
+        textarea.placeholder = (lang === "ar")
+          ? (textarea.getAttribute("data-ar-placeholder") || "اكتب...")
+          : (textarea.getAttribute("data-en-placeholder") || "Write...");
+      }
+
+      localStorage.setItem("fsdp_lang", lang);
+      btnEN?.classList.toggle("active", lang === "en");
+      btnAR?.classList.toggle("active", lang === "ar");
+    }
+    btnEN?.addEventListener("click", () => setLang("en"));
+    btnAR?.addEventListener("click", () => setLang("ar"));
+    setLang(localStorage.getItem("fsdp_lang") || "en");
+
+    // Stars logic
+    const stars = document.querySelectorAll(".star");
+    const starsInput = document.getElementById("starsInput");
+    const hint = document.getElementById("hint");
+
+    function paint(val){
+      stars.forEach(s => {
+        const starVal = Number(s.dataset.val || 0);
+        const on = starVal <= val;
+        s.classList.toggle("on", on);
+      });
+    }
+
+    stars.forEach(s => {
+      s.addEventListener("click", () => {
+        const val = Number(s.dataset.val || 0);
+        starsInput.value = String(val);
+        paint(val);
+        if(hint) hint.style.display = "none";
+      });
+
+      s.addEventListener("mouseenter", () => {
+        const val = Number(s.dataset.val || 0);
+        if(!starsInput.value) paint(val);
+      });
+    });
+
+    document.querySelector(".stars")?.addEventListener("mouseleave", () => {
+      if(!starsInput.value) paint(0);
+      else paint(Number(starsInput.value));
+    });
+
+    // Block submit if stars not selected
+    const form = document.getElementById("rateForm");
+    form?.addEventListener("submit", (e) => {
+      if(!starsInput.value){
+        e.preventDefault();
+        if(hint){
+          hint.style.display = "block";
+          hint.textContent = (document.body.dir === "rtl")
+            ? "اختاري النجوم أولاً قبل الإرسال."
+            : "Please choose stars before submitting.";
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>
