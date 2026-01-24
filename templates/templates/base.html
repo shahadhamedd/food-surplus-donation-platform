@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}FSDP{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png"
+          href="{{ url_for('static', filename='img/fsdp_logo.png') }}">
+
+    <!-- Main CSS -->
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+<!-- ================= HEADER ================= -->
+<header class="top-header">
+    <div class="top-inner">
+
+        <!-- LOGO / BRAND -->
+        <a href="{{ url_for('home') }}" class="fsdp-brand">
+            <img
+                src="{{ url_for('static', filename='img/fsdp_logo.png') }}"
+                alt="FSDP Logo"
+                class="fsdp-logo"
+            >
+            <div class="fsdp-text">
+                <div class="fsdp-title">FSDP</div>
+                <div class="fsdp-subtitle">
+                    Food Surplus Donation Platform
+                </div>
+            </div>
+        </a>
+
+        <!-- RIGHT SIDE (optional buttons) -->
+        <div class="top-right">
+            {% block header_right %}{% endblock %}
+        </div>
+
+    </div>
+</header>
+<!-- =============== END HEADER =============== -->
+
+
+<!-- ================= PAGE CONTENT ================= -->
+<main class="page-wrap">
+    {% block content %}{% endblock %}
+</main>
+<!-- =============== END CONTENT ================= -->
+
+
+{% block extra_js %}{% endblock %}
+
+</body>
+</html>
