@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Add Pickup Location</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg: #0b0f14;
+      --panel: rgba(255,255,255,0.06);
+      --panel2: rgba(255,255,255,0.08);
+      --border: rgba(255,255,255,0.10);
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.60);
+      --green: #2bb865;
+      --green2:#1b8f47;
+      --shadow: 0 22px 70px rgba(0,0,0,0.55);
+      --radius: 18px;
+      --danger: rgba(255,80,80,0.18);
+      --dangerBorder: rgba(255,80,80,0.28);
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Poppins, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(800px 500px at 20% 10%, rgba(43,184,101,0.18), transparent 60%),
+        radial-gradient(900px 550px at 90% 40%, rgba(90,140,255,0.16), transparent 60%),
+        var(--bg);
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+
+    .page{
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 26px;
+      opacity:0;
+      transform: translateY(10px);
+      animation: enter 600ms ease forwards;
+    }
+    @keyframes enter{to{opacity:1; transform: translateY(0);} }
+
+    .top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+
+    .back{
+      text-decoration:none;
+      font-weight:900;
+      color: var(--text);
+      padding:10px 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.06);
+      border:1px solid rgba(255,255,255,0.12);
+      transition: transform .18s ease;
+    }
+    .back:hover{transform: translateY(-2px);}
+
+    .card{
+      border-radius: var(--radius);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+
+    .panel{ padding:18px; }
+    h1{ margin:0; font-size:20px; font-weight:900; }
+    .sub{ margin:6px 0 0; font-size:13px; color: var(--muted); }
+
+    /* NEW: two column layout */
+    .layout{
+      margin-top:14px;
+      display:grid;
+      grid-template-columns: 420px 1fr;
+      gap:14px;
+      align-items:start;
+    }
+
+    .side{
+      border-radius: 18px;
+      background: rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.10);
+      padding:14px;
+    }
+
+    .map-side{
+      border-radius: 18px;
+      background: rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.10);
+      overflow:hidden;
+    }
+
+    .tools{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin-top:10px;
+    }
+
+    .input{
+      width:100%;
+      padding:12px 14px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      outline:none;
+      font-family:inherit;
+      font-weight:700;
+    }
+
+    .grid-2{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin-top:10px;
+    }
+
+    label{
+      display:block;
+      font-size:12px;
+      font-weight:900;
+      color: rgba(255,255,255,0.85);
+      margin:10px 0 6px;
+    }
+    .hint{
+      margin-top:8px;
+      font-size:12px;
+      color: var(--muted);
+      font-weight:800;
+      line-height:1.5;
+    }
+
+    .btn{
+      padding:12px 14px;
+      border-radius: 14px;
+      border:none;
+      cursor:pointer;
+      font-weight:900;
+      font-size:13px;
+      transition: transform .18s ease, filter .18s ease;
+      display:inline-flex; align-items:center; justify-content:center; gap:10px;
+      text-decoration:none;
+      user-select:none;
+    }
+    .btn:hover{ transform: translateY(-2px); filter: brightness(1.05); }
+    .btn:active{ transform: scale(0.99); }
+
+    .btn-green{
+      color:#06120b;
+      background: linear-gradient(180deg, #2bb865, #1b8f47);
+      box-shadow: 0 16px 30px rgba(43,184,101,0.18);
+    }
+    .btn-ghost{
+      color: var(--text);
+      background: rgba(255,255,255,0.06);
+      border:1px solid rgba(255,255,255,0.12);
+    }
+
+    .msg{
+      margin-top:12px;
+      padding:12px 14px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.06);
+      border:1px solid rgba(255,255,255,0.12);
+      color: var(--muted);
+      font-weight:800;
+      display:none;
+    }
+    .msg.error{
+      background: var(--danger);
+      border-color: var(--dangerBorder);
+      color: rgba(255,255,255,0.90);
+    }
+
+    /* Map */
+    #map{
+      width:100%;
+      height: 520px;
+    }
+
+    .footer{
+      padding:12px 14px;
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      border-top:1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .coords{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      color: var(--muted);
+      font-size:12px;
+      font-weight:800;
+    }
+    .pill{
+      padding:9px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      border:1px solid rgba(255,255,255,0.12);
+      color: var(--text);
+      font-weight:900;
+      min-width: 160px;
+      text-align:center;
+    }
+
+    @media (max-width: 1050px){
+      .layout{grid-template-columns: 1fr;}
+      #map{height: 420px;}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+
+    <div class="top">
+      <div>
+        <h1>📍 Add Pickup Location</h1>
+        <p class="sub">Fill in address details on the side and pin your exact location on the map.</p>
+      </div>
+
+      <a class="back" href="{{ url_for('provider_dashboard') }}">← Back to Dashboard</a>
+    </div>
+
+    <div class="card">
+      <div class="panel">
+
+        <form method="POST" id="locForm">
+
+          <div class="layout">
+
+            <!-- LEFT: details -->
+            <div class="side">
+
+              <label>Search on Map</label>
+              <input
+                class="input"
+                id="searchBox"
+                placeholder="Search address, area, shop name..."
+                value="{{ (user.location_text or '') if user else '' }}"
+                autocomplete="off"
+              />
+
+              <div class="tools">
+                <button type="button" class="btn btn-ghost" id="btnMyLoc">📍 Use My Location</button>
+                <button type="submit" class="btn btn-green">💾 Save Location</button>
+              </div>
+
+              <div id="msg" class="msg"></div>
+
+              <label>Shop / Store Name</label>
+              <input class="input" id="shopName" name="location_shop_name"
+                     placeholder="e.g., Al Noor Restaurant"
+                     value="{{ (user.location_shop_name or '') if user else '' }}">
+
+              <div class="grid-2">
+                <div>
+                  <label>Street</label>
+                  <input class="input" id="street" name="location_street"
+                         placeholder="e.g., Sultan Qaboos St"
+                         value="{{ (user.location_street or '') if user else '' }}">
+                </div>
+                <div>
+                  <label>Area / City</label>
+                  <input class="input" id="area" name="location_area"
+                         placeholder="e.g., Al Khuwair, Muscat"
+                         value="{{ (user.location_area or '') if user else '' }}">
+                </div>
+              </div>
+
+              <div class="grid-2">
+                <div>
+                  <label>Building</label>
+                  <input class="input" id="building" name="location_building"
+                         placeholder="e.g., Building 12"
+                         value="{{ (user.location_building or '') if user else '' }}">
+                </div>
+                <div>
+                  <label>Apartment / Office</label>
+                  <input class="input" id="apartment" name="location_apartment"
+                         placeholder="e.g., Apt 3B / Office 5"
+                         value="{{ (user.location_apartment or '') if user else '' }}">
+                </div>
+              </div>
+
+              <label>Extra Notes (Optional)</label>
+              <input class="input" id="notes" name="location_notes"
+                     placeholder="e.g., Near the pharmacy, entrance on the right"
+                     value="{{ (user.location_notes or '') if user else '' }}">
+
+              <p class="hint">
+                Tip: You can type the address here, or search on the map, or pin the location by clicking on the map.
+                When you save, we will store your detailed address + the exact coordinates.
+              </p>
+
+              <!-- hidden lat/lng + composed text -->
+              <input type="hidden" name="lat" id="lat" value="{{ (user.location_lat or '') if user else '' }}">
+              <input type="hidden" name="lng" id="lng" value="{{ (user.location_lng or '') if user else '' }}">
+              <input type="hidden" name="location_text" id="locationTextHidden" value="{{ (user.location_text or '') if user else '' }}">
+
+            </div>
+
+            <!-- RIGHT: map -->
+            <div class="map-side">
+              <div id="map"></div>
+
+              <div class="footer">
+                <div class="coords">
+                  <div class="pill">Latitude: <span id="latTxt">-</span></div>
+                  <div class="pill">Longitude: <span id="lngTxt">-</span></div>
+                </div>
+
+                <a class="btn btn-ghost" id="openMapsBtn" target="_blank" rel="noopener" href="https://www.google.com/maps?q=23.5880,58.3829">
+                  🧭 Open in Google Maps
+                </a>
+              </div>
+
+            </div>
+
+          </div>
+        </form>
+
+        <p class="sub" style="margin-top:12px;">
+          If the coordinates are empty, please set the pin before saving.
+        </p>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // ---- UI helpers ----
+    const msg = document.getElementById("msg");
+    const latInp = document.getElementById("lat");
+    const lngInp = document.getElementById("lng");
+    const latTxt = document.getElementById("latTxt");
+    const lngTxt = document.getElementById("lngTxt");
+    const searchBox = document.getElementById("searchBox");
+    const btnMyLoc = document.getElementById("btnMyLoc");
+    const form = document.getElementById("locForm");
+
+    const shopName = document.getElementById("shopName");
+    const street = document.getElementById("street");
+    const area = document.getElementById("area");
+    const building = document.getElementById("building");
+    const apartment = document.getElementById("apartment");
+    const notes = document.getElementById("notes");
+    const locationTextHidden = document.getElementById("locationTextHidden");
+    const openMapsBtn = document.getElementById("openMapsBtn");
+
+    function showMsg(text, isError=false){
+      msg.textContent = text;
+      msg.classList.toggle("error", !!isError);
+      msg.style.display = "block";
+    }
+    function hideMsg(){ msg.style.display = "none"; }
+
+    function setCoords(lat, lng){
+      latInp.value = lat;
+      lngInp.value = lng;
+      latTxt.textContent = lat ? Number(lat).toFixed(6) : "-";
+      lngTxt.textContent = lng ? Number(lng).toFixed(6) : "-";
+
+      if(lat && lng){
+        openMapsBtn.href = `https://www.google.com/maps?q=${encodeURIComponent(lat + "," + lng)}`;
+      }
+    }
+
+    function composeLocationText(){
+      const parts = [];
+      const sn = (shopName.value || "").trim();
+      const st = (street.value || "").trim();
+      const ar = (area.value || "").trim();
+      const bd = (building.value || "").trim();
+      const ap = (apartment.value || "").trim();
+      const nt = (notes.value || "").trim();
+
+      if(sn) parts.push(sn);
+      if(st) parts.push(st);
+      if(bd) parts.push(bd);
+      if(ap) parts.push(ap);
+      if(ar) parts.push(ar);
+      if(nt) parts.push(nt);
+
+      // if user didn't fill details, fallback to searchBox
+      const composed = parts.join(", ");
+      return composed || (searchBox.value || "").trim();
+    }
+
+    // keep hidden location_text synced
+    function syncLocationText(){
+      const t = composeLocationText();
+      locationTextHidden.value = t;
+      if(t && (searchBox.value || "").trim().length < 2){
+        // if search box empty, show composed text
+        searchBox.value = t;
+      }
+    }
+
+    [shopName, street, area, building, apartment, notes].forEach(el => {
+      el.addEventListener("input", syncLocationText);
+    });
+
+    // ---- Google Maps ----
+    let map, marker, autocomplete;
+
+    function initMap(){
+      hideMsg();
+
+      const savedLat = parseFloat(latInp.value || "");
+      const savedLng = parseFloat(lngInp.value || "");
+
+      const defaultCenter = { lat: 23.5880, lng: 58.3829 }; // Muscat fallback
+      const startCenter = (!isNaN(savedLat) && !isNaN(savedLng)) ? { lat: savedLat, lng: savedLng } : defaultCenter;
+
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: startCenter,
+        zoom: (!isNaN(savedLat) && !isNaN(savedLng)) ? 15 : 11,
+        mapTypeControl: false,
+        streetViewControl: false,
+        fullscreenControl: false
+      });
+
+      marker = new google.maps.Marker({
+        position: startCenter,
+        map,
+        draggable: true
+      });
+
+      setCoords(startCenter.lat, startCenter.lng);
+      syncLocationText();
+
+      // Click to set pin
+      map.addListener("click", (e) => {
+        const pos = { lat: e.latLng.lat(), lng: e.latLng.lng() };
+        marker.setPosition(pos);
+        setCoords(pos.lat, pos.lng);
+        hideMsg();
+      });
+
+      // Drag pin
+      marker.addListener("dragend", () => {
+        const p = marker.getPosition();
+        setCoords(p.lat(), p.lng());
+        hideMsg();
+      });
+
+      // Autocomplete (Places)
+      autocomplete = new google.maps.places.Autocomplete(searchBox, {
+        fields: ["geometry", "formatted_address", "name"]
+      });
+
+      autocomplete.addListener("place_changed", () => {
+        const place = autocomplete.getPlace();
+        if(!place || !place.geometry || !place.geometry.location){
+          showMsg("Oops! Could not get this place location. Try another search.", true);
+          return;
+        }
+
+        const loc = place.geometry.location;
+        const pos = { lat: loc.lat(), lng: loc.lng() };
+
+        marker.setPosition(pos);
+        map.panTo(pos);
+        map.setZoom(16);
+
+        setCoords(pos.lat, pos.lng);
+
+        // If user didn't type details, fill shop name / area lightly (optional)
+        const label = place.formatted_address || place.name || searchBox.value;
+        searchBox.value = label;
+
+        // store this as base text if details empty
+        if(!composeLocationText()){
+          locationTextHidden.value = label;
+        }else{
+          syncLocationText();
+        }
+
+        hideMsg();
+      });
+
+      // Use My Location
+      btnMyLoc.addEventListener("click", () => {
+        hideMsg();
+        if(!navigator.geolocation){
+          showMsg("Geolocation is not supported by this browser.", true);
+          return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const p = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+            marker.setPosition(p);
+            map.panTo(p);
+            map.setZoom(16);
+            setCoords(p.lat, p.lng);
+            hideMsg();
+          },
+          () => {
+            showMsg("Location permission denied or unavailable. Please allow location access.", true);
+          },
+          { enableHighAccuracy: true, timeout: 10000 }
+        );
+      });
+
+      // Validate on submit
+      form.addEventListener("submit", (e) => {
+        const lat = parseFloat(latInp.value || "");
+        const lng = parseFloat(lngInp.value || "");
+        if(isNaN(lat) || isNaN(lng)){
+          e.preventDefault();
+          showMsg("Please set the pin on the map before saving.", true);
+          return;
+        }
+
+        // sync composed text before submitting
+        syncLocationText();
+
+        if(!(locationTextHidden.value || "").trim()){
+          e.preventDefault();
+          showMsg("Please enter address details or search on the map before saving.", true);
+        }
+      });
+    }
+
+    window.initMap = initMap;
+  </script>
+
+  <script
+    async
+    defer
+    src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_key }}&libraries=places&callback=initMap">
+  </script>
+
+</body>
+</html>
